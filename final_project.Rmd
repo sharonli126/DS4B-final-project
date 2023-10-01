@@ -1,0 +1,36 @@
+---
+title: "Final_report"
+author: "Sharon"
+date: "2023-09-29"
+output: html_document
+---
+Library
+```{r}
+install.packages("BioPerl")
+library(tidyverse)
+```
+
+
+Loading the data
+```{r}
+data <- read_delim("Downloads/dataset/anage_data.txt", 
+                   delim = "\t", 
+                   escape_double = FALSE, 
+                   trim_ws = TRUE)
+```
+
+Checking the data
+```{r}
+str(data)
+```
+
+
+```{r}
+mammalia <- data[data$Class == "Mammalia",]
+```
+
+```{r}
+mammalia_subset <- subset(mammalia, 
+                          `Data quality` != "low" & `Sample size` != c("small", "tiny)"  )
+```
+
