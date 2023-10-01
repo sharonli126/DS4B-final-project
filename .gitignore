@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
+raw_data/anage_data.txt
+.DS_Store
