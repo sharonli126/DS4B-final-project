@@ -11,7 +11,7 @@ Why do some animals live only a few years, but some can live several years, or e
 
 ## Data Tidy
 Library
-```{r}
+```{r, include=F}
 library(tidyverse)
 library(janitor)
 ```
@@ -109,3 +109,25 @@ ggplot(selected_order, aes(x = metabolic_rate_w , y = maximum_longevity_yrs)) +
   labs(y = "Max. Lifespan")
 ```
 
+Trying to fit a linear model
+```{r}
+model <- lm(data = mammalia_subset, 
+            maximum_longevity_yrs ~ adult_weight_g + 
+              metabolic_rate_w + 
+              gestation_incubation_days +
+              weaning_days)
+
+summary(model)
+```
+
+```{r}
+model_car <- lm(data = carnivora, 
+            maximum_longevity_yrs ~ adult_weight_g + 
+              metabolic_rate_w + 
+              gestation_incubation_days +
+              weaning_days)
+
+summary(model_car)
+```
+
+With the correlation so far above, it is quite interesting to find gestation incubation days and weaning day have a high effect on the lifespan in mammal. I will further dig to it
