@@ -9,13 +9,15 @@ output: html_document
 Why do some animals live only a few years, but some can live several years, or even over a hundred year? This has been one of the most interesting questions in Biology all the time. While animals varies in lifespan, the order of Mammalia, which we, humans belong to, particularly present a diverse of lifespan. For hamster or mouse, they only have around 4 years lifespan but for a gorilla, it can live up to around 60 years, or humans and whales can live even over 100 years old! Therefore, to understand deeper of how different factors correlate with lifespan in Mammalia, this study analyse a big database of aging and life history in over 4600 animal species from AnAge, aiming to find the correlation of possible aging related factors, including body weight, birth condition and metabolic rate.
 
 
-## Data Tidy
+
 Library
 ```{r, include=F}
 library(tidyverse)
 library(janitor)
+library(skimr)
 ```
 
+## Data Tidy
 
 Loading the data
 ```{r}
@@ -31,6 +33,10 @@ data <- raw_data |>
 Checking the data
 ```{r}
 str(data)
+```
+
+```{r}
+skim(data)
 ```
 
 
