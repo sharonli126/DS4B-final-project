@@ -1,12 +1,31 @@
 ---
-title: "Final_report"
-author: "Sharon"
-date: "2023-09-29"
-output: html_document
+title: "A title for your project"
+author: "Your name and U number"
+date: "Today's date"
+output:  
+    html_document:
+        toc: true
+        toc_depth: 4
+        theme: cosmo
+        number_sections: false
+        toc_float: true
+        highlight: pygments
+        fig_width: 8
+        fig_height: 4
 ---
+# Word/figure count
+
+Words: [The number of words in your document, calculated using the word_count() function at the end of this document]
+Figures: [The number of figures in your document. You can just count these]
+
+# Location on GitHub
+
+https://github.com/sharonli126/DS4B-final-project 
+
 # Why do Some Animal have Longer Lifespan?
 
 Why do some animals live only a few years, but some can live several years, or even over a hundred year? This has been one of the most interesting questions in Biology all the time. While animals varies in lifespan, the order of Mammalia, which we, humans belong to, particularly present a diverse of lifespan. For hamster or mouse, they only have around 4 years lifespan but for a gorilla, it can live up to around 60 years, or humans and whales can live even over 100 years old! Therefore, to understand deeper of how different factors correlate with lifespan in Mammalia, this study analyse a big database of aging and life history in over 4600 animal species from AnAge, aiming to find the correlation of possible aging related factors, including body weight, birth condition and metabolic rate.
+
 
 
 
@@ -41,10 +60,19 @@ skim(data)
 
 
 ```{r}
-mammalia <- data[data$class == "Mammalia",]
+aves <- data[data$class == "Aves",]
+aves |>
+  summarise(n = n())
+summary(aves)
 ```
 
 ```{r}
+aves_subset <- subset(aves, data_quality != "low" & sample_size != c("small", "tiny"))
+```
+
+
+```{r}
+mammalia <- data[data$class == "Mammalia",]
 mammalia_subset <- subset(mammalia, data_quality != "low" & sample_size != c("small", "tiny"))
 ```
 
@@ -74,9 +102,8 @@ mammalia_subset|>
 
 ## Correlation
 ```{r}
-ggplot(selected_order, aes(x = maximum_longevity_yrs)) +
+ggplot(aves, aes(x = maximum_longevity_yrs)) +
   geom_histogram() +
-  facet_wrap(~ order) +
   coord_cartesian(xlim = c(1, 80))
 ```
 
@@ -88,6 +115,15 @@ ggplot(selected_order, aes(x = adult_weight_g, y = maximum_longevity_yrs)) +
   labs(y = "Max. Lifespan") +
   coord_cartesian(xlim = c(1, 80000))
 ```
+
+```{r}
+ggplot(aves, aes(x = adult_weight_g, y = maximum_longevity_yrs)) +
+  geom_point() + 
+  geom_smooth() +
+  labs(y = "Max. Lifespan") +
+  coord_cartesian(xlim = c(1, 20000))
+```
+
 
 ```{r}
 ggplot(selected_order, aes(x = weaning_days, y = maximum_longevity_yrs)) +
@@ -104,7 +140,7 @@ ggplot(selected_order, aes(x = weaning_days, y = maximum_longevity_yrs)) +
 ggplot(selected_order, aes(x = gestation_incubation_days , y = maximum_longevity_yrs)) +
   geom_point() + 
   geom_smooth() +
-  labs(y = "Max. Lifespan") +
+  labs(y = "Max. Lifespan", x = "Gestation Incubation Days") +
   facet_wrap(~ order)
 ```
 
@@ -117,19 +153,22 @@ ggplot(selected_order, aes(x = metabolic_rate_w , y = maximum_longevity_yrs)) +
 
 Trying to fit a linear model
 ```{r}
-model <- lm(data = mammalia_subset, 
+model <- lm(data = mammalia_clean,
             maximum_longevity_yrs ~ adult_weight_g + 
+              weaning_days +
               metabolic_rate_w + 
-              gestation_incubation_days +
-              weaning_days)
+              gestation_incubation_days)
 
 summary(model)
 ```
 
+__mentioning the reason of variance, eg: sample size__
+
+
+
 ```{r}
-model_car <- lm(data = carnivora, 
+model_car <- lm(data = primates_clean, 
             maximum_longevity_yrs ~ adult_weight_g + 
-              metabolic_rate_w + 
               gestation_incubation_days +
               weaning_days)
 
@@ -137,3 +176,11 @@ summary(model_car)
 ```
 
 With the correlation so far above, it is quite interesting to find gestation incubation days and weaning day have a high effect on the lifespan in mammal. I will further dig to it
+
+Aves: no weaning days record, metabolic rate is the only significant
+Mammalia: 
+
+Data cleaning: use clean data for lm, since it is comparing all factors but for data plotting it can be regular data
+
+To do list:
+gitignore comment
