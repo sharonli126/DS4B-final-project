@@ -1,0 +1,61 @@
+---
+title: "data_cleaning"
+author: "Sharon"
+date: "2023-10-05"
+output: html_document
+---
+
+Library
+```{r}
+library(tibble)
+library(readr)
+library(skimr)
+library(dplyr)
+library(janitor)
+```
+
+raw data
+```{r}
+raw_data <- read_delim("raw_data/anage_data.txt", delim = "\t", escape_double = FALSE, trim_ws = TRUE)
+
+data <- clean_names(raw_data)
+```
+
+
+```{r}
+raw_data_summary <- raw_data |>
+  group_by(Kingdom, Phylum, Class) |>
+  summarise()
+
+raw_data_summary
+```
+
+Filtering only the data i want to investigate and identify is there any weird data.
+```{r}
+mammalia <- data[data$class == "Mammalia",]
+
+mammalia_subset <- mammalia[, c("hagrid", "kingdom", "phylum", "class", "order", "family", "genus", "species", "maximum_longevity_yrs", "gestation_incubation_days", "weaning_days", "adult_weight_g")]
+
+mammalia[, c("hagrid", "kingdom", "phylum", "class", "order", "family", "genus", "species", "maximum_longevity_yrs", "gestation_incubation_days", "weaning_days", "adult_weight_g", "metabolic_rate_w")]
+```
+
+```{r}
+skim(mammalia_subset)
+```
+
+```{r}
+mammalia_clean <- na.omit(mammalia_subset)
+
+primates_clean <- mammalia_clean[mammalia_clean$order == "Primates",]
+rodentia_clean <- mammalia_clean[mammalia_clean$order == "Rodentia",]
+```
+
+
+Find the HAGRID out
+
+Question:
+1. Should i filter the data i want here or it is just data cleaning here?
+2. confusion of issue in github
+3. some graph problem: weaning day --> rodentia (have smaller range) 
+4. if i am only investigating correlation of some order in mammal, is it ok for me to say i chose those because they havee larger sample size
+5. Some factors were found to be not signifigant in correlation with lifespan, it is againsting some paper
