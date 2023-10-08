@@ -22,9 +22,28 @@ Figures: [The number of figures in your document. You can just count these]
 
 https://github.com/sharonli126/DS4B-final-project 
 
-# Why do Some Animal have Longer Lifespan?
+# Data Description
 
-Why do some animals live only a few years, but some can live several years, or even over a hundred year? This has been one of the most interesting questions in Biology all the time. While animals varies in lifespan, the order of Mammalia, which we, humans belong to, particularly present a diverse of lifespan. For hamster or mouse, they only have around 4 years lifespan but for a gorilla, it can live up to around 60 years, or humans and whales can live even over 100 years old! Therefore, to understand deeper of how different factors correlate with lifespan in Mammalia, this study analyse a big database of aging and life history in over 4600 animal species from AnAge, aiming to find the correlation of possible aging related factors, including body weight, birth condition and metabolic rate.
+[A brief (~100-200 words should be more than enough) description of the dataset, referencing any key publications that go with it]
+
+# Questions/Aims
+
+__How do life-history traits leads to difference of longevity in between the orders Primates and Rodentia?__
+
+[A brief section which first states and then justifies the questions/aims of your EDA. Must provide evidence of independent research into what has been done before on these questions/aims. See above for examples.]
+
+Why do some animals live only a few years, but some can live several years, or even over a hundred year? This has been one of the most interesting questions in Biology all the time. While animals varies in lifespan, the order of Mammalia, which we, humans belong to, particularly present a diverse of lifespan. For hamster or mouse, they only have around 4 years lifespan but for a gorilla, it can live up to around 60 years, or humans and whales can live even over 100 years old! 
+
+Both Primates and Rodentia are order with a large family, but they have represent two very different life-history strategies.Primates tend to have longer lifespans, extended juvenile dependency periods, and fewer offspring, while most rodents reproduce quickly, have shorter lifespans, and produce more offspring in their lifetime.
+
+Therefore, to understand deeper of how different factors correlate with lifespan in Mammalia, this study analyse a big database of aging and life history in over 4600 animal species from AnAge, aiming to find the correlation of possible aging related factors, including body weight, birth condition and metabolic rate.
+
+# Raw data
+
+[Explains how and where to get the exact raw data you got]
+[Is reproducible by a person (required) and a machine (ideally)]
+
+
 
 
 
@@ -32,8 +51,6 @@ Why do some animals live only a few years, but some can live several years, or e
 Library
 ```{r, include=F}
 library(tidyverse)
-library(janitor)
-library(skimr)
 ```
 
 ## Data Tidy
@@ -78,7 +95,7 @@ mammalia_subset <- subset(mammalia, data_quality != "low" & sample_size != c("sm
 
 ```{r}
 carnivora <- mammalia_subset[mammalia_subset$order == "Carnivora",]
-primates <- mammalia_subset[mammalia_subset$order == "Primate",]
+primates <- mammalia_subset[mammalia_subset$order == "Primates",]
 rodentia <- mammalia_subset[mammalia_subset$order == "Rodentia",]
 artiodactyla <- mammalia_subset[mammalia_subset$order == "Artiodactyla",]
 chiroptera <- mammalia_subset[mammalia_subset$order == "Chiroptera",]
@@ -108,12 +125,9 @@ ggplot(aves, aes(x = maximum_longevity_yrs)) +
 ```
 
 ```{r}
-ggplot(selected_order, aes(x = adult_weight_g, y = maximum_longevity_yrs)) +
+ggplot(mammalia, aes(x =inter_litter_interbirth_interval , y = adult_weight_g)) +
   geom_point() + 
-  geom_smooth() +
-  facet_wrap(~ order) + 
-  labs(y = "Max. Lifespan") +
-  coord_cartesian(xlim = c(1, 80000))
+  geom_smooth()
 ```
 
 ```{r}
@@ -154,9 +168,9 @@ ggplot(selected_order, aes(x = metabolic_rate_w , y = maximum_longevity_yrs)) +
 Trying to fit a linear model
 ```{r}
 model <- lm(data = mammalia_clean,
-            maximum_longevity_yrs ~ adult_weight_g + 
+            adult_weight_g ~  
               weaning_days +
-              metabolic_rate_w + 
+              inter_litter_interbirth_interval + 
               gestation_incubation_days)
 
 summary(model)
@@ -167,13 +181,22 @@ __mentioning the reason of variance, eg: sample size__
 
 
 ```{r}
-model_car <- lm(data = primates_clean, 
-            maximum_longevity_yrs ~ adult_weight_g + 
+model_car <- lm(data = mammalia_clean, 
+            maximum_longevity_yrs ~ adult_weight_g +
+              order +
               gestation_incubation_days +
-              weaning_days)
+              weaning_days +
+              temperature_k)
 
 summary(model_car)
 ```
+
+```{r}
+ggplot(primates, aes(x = adult_weight_g, y = weaning_days)) +
+  geom_point() +
+  geom_smooth()
+```
+
 
 With the correlation so far above, it is quite interesting to find gestation incubation days and weaning day have a high effect on the lifespan in mammal. I will further dig to it
 
@@ -184,3 +207,11 @@ Data cleaning: use clean data for lm, since it is comparing all factors but for 
 
 To do list:
 gitignore comment
+reseach q
+
+
+Reference:
+
+Lee, P. C. (1996) The meanings of weaning: Growth, lactation, and life history. Evolutionary anthropology. [Online] 5 (3), 87–98.
+
+
