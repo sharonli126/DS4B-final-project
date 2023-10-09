@@ -26,6 +26,10 @@ https://github.com/sharonli126/DS4B-final-project
 
 [A brief (~100-200 words should be more than enough) description of the dataset, referencing any key publications that go with it]
 
+AnAge is a database recording the longevity, ageing and life history of over 4000 species which researchers have collected and published relevant data. 
+
+
+
 # Questions/Aims
 
 __How do life-history traits leads to difference of longevity in between the orders Primates and Rodentia?__
@@ -34,28 +38,15 @@ __How do life-history traits leads to difference of longevity in between the ord
 
 Why do some animals live only a few years, but some can live several years, or even over a hundred year? This has been one of the most interesting questions in Biology all the time. While animals varies in lifespan, the order of Mammalia, which we, humans belong to, particularly present a diverse of lifespan. For hamster or mouse, they only have around 4 years lifespan but for a gorilla, it can live up to around 60 years, or humans and whales can live even over 100 years old! 
 
-Both Primates and Rodentia are order with a large family, but they have represent two very different life-history strategies.Primates tend to have longer lifespans, extended juvenile dependency periods, and fewer offspring, while most rodents reproduce quickly, have shorter lifespans, and produce more offspring in their lifetime.
+Both Primates and Rodentia are order with a large family, but they have represent two very different life-history strategies. Primates tend to have longer lifespans, extended juvenile dependency periods, and fewer offspring, while most rodents reproduce quickly, have shorter lifespans, and produce more offspring in their lifetime.  
 
-Therefore, to understand deeper of how different factors correlate with lifespan in Mammalia, this study analyse a big database of aging and life history in over 4600 animal species from AnAge, aiming to find the correlation of possible aging related factors, including body weight, birth condition and metabolic rate.
+Therefore, to understand deeper of how different factors correlate with lifespan in these two different order, this study analyse a big database of aging and life history in over 4600 animal species from AnAge, aiming to find the correlation of possible aging related life history trait, particularly on reproductive strategies.
 
 # Raw data
 
 [Explains how and where to get the exact raw data you got]
 [Is reproducible by a person (required) and a machine (ideally)]
 
-
-
-
-
-
-Library
-```{r, include=F}
-library(tidyverse)
-```
-
-## Data Tidy
-
-Loading the data
 ```{r}
 raw_data <- read_delim("raw_data/anage_data.txt", 
                    delim = "\t", 
@@ -66,55 +57,39 @@ data <- raw_data |>
   clean_names()
 ```
 
-Checking the data
-```{r}
-str(data)
+This data is download from AnAge (URL: https://genomics.senescence.info/species/dataset.zip)
+
+It is reproducible with reference mentioned.
+
+
+# Data wrangling
+
+[R chunks and prose which:]
+[Tidies up your raw data, outputs tidied_data.csv]
+[Cleans up your tidied data, outputs cleaned_data.csv]
+
+# Sanity checks
+
+[R chunks and prose which perform sanity checks on your cleaned data]
+[Remember that this really just summarises that your data are OK after you've cleaned them]
+[Most of the real sanity checks and data cleaning go on in the data_cleaning.Rmd file]
+
+# Addressing the questions/aims
+
+[This is the *main* section of your work. For example, if you are doing an EDA, this is where you would summarise it. If you are building something like a package or shiny app, a description of that package / app and demonstration of its function(s) would go here. Use appropriate sub-headings.]
+
+# References
+
+[References you have cited throughout your text]
+
+Library
+```{r, include=F}
+library(tidyverse)
 ```
 
-```{r}
-skim(data)
-```
+## Data Tidy
 
 
-```{r}
-aves <- data[data$class == "Aves",]
-aves |>
-  summarise(n = n())
-summary(aves)
-```
-
-```{r}
-aves_subset <- subset(aves, data_quality != "low" & sample_size != c("small", "tiny"))
-```
-
-
-```{r}
-mammalia <- data[data$class == "Mammalia",]
-mammalia_subset <- subset(mammalia, data_quality != "low" & sample_size != c("small", "tiny"))
-```
-
-```{r}
-carnivora <- mammalia_subset[mammalia_subset$order == "Carnivora",]
-primates <- mammalia_subset[mammalia_subset$order == "Primates",]
-rodentia <- mammalia_subset[mammalia_subset$order == "Rodentia",]
-artiodactyla <- mammalia_subset[mammalia_subset$order == "Artiodactyla",]
-chiroptera <- mammalia_subset[mammalia_subset$order == "Chiroptera",]
-
-selected_order <- rbind(carnivora, primates, rodentia, artiodactyla)
-```
-
-
-```{r}
-weight <- mammalia_subset |>
-  filter(!is.na(adult_weight_g) & !is.na(maximum_longevity_yrs))
-```
-
-```{r}
-mammalia_subset|>
-  group_by(order) |>
-  summarise(n = n())|>
-  arrange(desc(n))
-```
 
 
 ## Correlation
@@ -125,7 +100,7 @@ ggplot(aves, aes(x = maximum_longevity_yrs)) +
 ```
 
 ```{r}
-ggplot(mammalia, aes(x =inter_litter_interbirth_interval , y = adult_weight_g)) +
+ggplot(mammalia, aes(x =inter_litter_interbirth_interval , y = maximum_longevity_yrs)) +
   geom_point() + 
   geom_smooth()
 ```
