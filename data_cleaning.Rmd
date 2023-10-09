@@ -22,33 +22,69 @@ data <- clean_names(raw_data)
 ```
 
 
-```{r}
-raw_data_summary <- raw_data |>
-  group_by(Kingdom, Phylum, Class) |>
-  summarise()
-
-raw_data_summary
-```
-
-Filtering only the data i want to investigate and identify is there any weird data.
+Filtering only the data I want to investigate and identify is there any weird data.
 ```{r}
 mammalia <- data[data$class == "Mammalia",]
 
-mammalia_subset <- mammalia[, c("hagrid", "kingdom", "phylum", "class", "order", "family", "genus", "species", "maximum_longevity_yrs", "gestation_incubation_days", "weaning_days", "adult_weight_g")]
+mammalia_subset <- mammalia[, c("hagrid", "kingdom", "phylum", "class", "order", "family", "genus", "species", "common_name", "gestation_incubation_days", "weaning_days", "adult_weight_g", "inter_litter_interbirth_interval", "maximum_longevity_yrs" )]
 
-mammalia[, c("hagrid", "kingdom", "phylum", "class", "order", "family", "genus", "species", "maximum_longevity_yrs", "gestation_incubation_days", "weaning_days", "adult_weight_g", "metabolic_rate_w")]
+primates<- mammalia_subset[mammalia_subset$order == "Primates",]
+rodentia <- mammalia_subset[mammalia_subset$order == "Rodentia",]
+```
+
+Checking number of NA in the data
+
+```{r}
+skim(primates)
 ```
 
 ```{r}
-skim(mammalia_subset)
+skim(rodentia)
+```
+
+Here we try to remove nonsense data 
+
+Assuming all species from same genus have a similar feature, so they wont have a vary difference
+```{r}
+primates|>
+group_by(genus) |>
+  summarise(range_gid = max(gestation_incubation_days, na.rm = T) - min(gestation_incubation_days, na.rm = T), 
+            mean_gid = mean (gestation_incubation_days, na.rm = T),
+            range_wd = max(weaning_days, na.rm = T) - min(weaning_days, na.rm = T), 
+            mean_wd = mean (weaning_days, na.rm = T),
+            range_longevity = max(maximum_longevity_yrs, na.rm = T) - min(maximum_longevity_yrs, na.rm = T), 
+            mean_longivity = mean (maximum_longevity_yrs, na.rm = T), 
+            n = n()) |>
+  filter(n > 1)
 ```
 
 ```{r}
-mammalia_clean <- na.omit(mammalia_subset)
-
-primates_clean <- mammalia_clean[mammalia_clean$order == "Primates",]
-rodentia_clean <- mammalia_clean[mammalia_clean$order == "Rodentia",]
+primates|>
+group_by(genus) |>
+  summarise(range_interbirth = max(inter_litter_interbirth_interval, na.rm = T) - min(inter_litter_interbirth_interval, na.rm = T), 
+            mean_interbirth = mean (inter_litter_interbirth_interval, na.rm = T),
+            range_weight = max(adult_weight_g, na.rm = T) - min(adult_weight_g, na.rm = T), 
+            mean_weight = mean (adult_weight_g, na.rm = T), n = n()) |>
+  filter(n > 1)
 ```
+
+```{r}
+rodentia|>
+group_by(genus) |>
+  summarise(range_gid = max(gestation_incubation_days, na.rm = T) - min(gestation_incubation_days, na.rm = T), 
+            mean_gid = mean (gestation_incubation_days, na.rm = T),
+            range_wd = max(weaning_days, na.rm = T) - min(weaning_days, na.rm = T), 
+            mean_wd = mean (weaning_days, na.rm = T),
+            range_longevity = max(maximum_longevity_yrs, na.rm = T) - min(maximum_longevity_yrs, na.rm = T), 
+            mean_longivity = mean (maximum_longevity_yrs, na.rm = T), 
+            range_weight = max(adult_weight_g, na.rm = T) - min(adult_weight_g, na.rm = T), 
+            mean_weight = mean (adult_weight_g, na.rm = T),
+            range_interbirth = max(inter_litter_interbirth_interval, na.rm = T) - min(inter_litter_interbirth_interval, na.rm = T), 
+            mean_interbirth = mean (inter_litter_interbirth_interval, na.rm = T), n = n()) |>
+  filter(n > 1)
+```
+
+
 
 
 Find the HAGRID out
