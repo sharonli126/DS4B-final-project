@@ -62,9 +62,33 @@ It is reproducible with reference mentioned.
 
 # Data wrangling
 
+```{r}
+excluded_data <- read_csv("processed_data/excluded_data.csv")
+
+```
+
 [R chunks and prose which:]
 [Tidies up your raw data, outputs tidied_data.csv]
 [Cleans up your tidied data, outputs cleaned_data.csv]
+
+Exporting clean data
+```{r}
+write.csv(primate_clean, 
+          "/Users/lisharon/Documents/GitHub/DB4S_final_project/processed_data/primates_clean.csv", 
+          row.names = FALSE)
+
+write.csv(rodentia_clean, 
+          "/Users/lisharon/Documents/GitHub/DB4S_final_project/processed_data/rodentia_clean.csv", 
+          row.names = FALSE)
+
+write.csv(primates_filtered, 
+          "/Users/lisharon/Documents/GitHub/DB4S_final_project/processed_data/primates_filtered.csv", 
+          row.names = FALSE)
+
+write.csv(rodentia_filtered, 
+          "/Users/lisharon/Documents/GitHub/DB4S_final_project/processed_data/rodentia_filtered.csv", 
+          row.names = FALSE)
+```
 
 # Sanity checks
 
