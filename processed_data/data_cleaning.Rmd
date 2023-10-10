@@ -77,21 +77,34 @@ group_by(genus) |>
             mean_wd = mean (weaning_days, na.rm = T),
             range_longevity = max(maximum_longevity_yrs, na.rm = T) - min(maximum_longevity_yrs, na.rm = T), 
             mean_longivity = mean (maximum_longevity_yrs, na.rm = T), 
-            range_weight = max(adult_weight_g, na.rm = T) - min(adult_weight_g, na.rm = T), 
-            mean_weight = mean (adult_weight_g, na.rm = T),
-            range_interbirth = max(inter_litter_interbirth_interval, na.rm = T) - min(inter_litter_interbirth_interval, na.rm = T), 
-            mean_interbirth = mean (inter_litter_interbirth_interval, na.rm = T), n = n()) |>
+            n = n()) |>
   filter(n > 1)
+```
+
+```{r}
+rodentia|>
+group_by(genus) |>
+  summarise(range_interbirth = max(inter_litter_interbirth_interval, na.rm = T) - min(inter_litter_interbirth_interval, na.rm = T), 
+            mean_interbirth = mean (inter_litter_interbirth_interval, na.rm = T),
+            range_weight = max(adult_weight_g, na.rm = T) - min(adult_weight_g, na.rm = T), 
+            mean_weight = mean (adult_weight_g, na.rm = T), n = n()) |>
+  filter(n > 1)
+```
+
+Removing all the NA or weird data
+```{r}
+primates_filtered <- primates |> 
+  filter(!hagrid %in% c("02677", "02675", "02749", "02740", "02790"))
+
+rodentia_filtered <- rodentia|> 
+  filter(!hagrid %in% c("02857", "03157", "03192"))
+
+primate_clean <- na.omit(primates_filtered)
+
+rodentia_clean <- na.omit(rodentia_filtered)
 ```
 
 
 
 
-Find the HAGRID out
 
-Question:
-1. Should i filter the data i want here or it is just data cleaning here?
-2. confusion of issue in github
-3. some graph problem: weaning day --> rodentia (have smaller range) 
-4. if i am only investigating correlation of some order in mammal, is it ok for me to say i chose those because they havee larger sample size
-5. Some factors were found to be not signifigant in correlation with lifespan, it is againsting some paper
