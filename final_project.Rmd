@@ -26,9 +26,7 @@ https://github.com/sharonli126/DS4B-final-project
 
 [A brief (~100-200 words should be more than enough) description of the dataset, referencing any key publications that go with it]
 
-AnAge is a database recording the longevity, ageing and life history of over 4000 species which researchers have collected and published relevant data. 
-
-
+AnAge is a database recording the longevity, ageing and life history across over 4000 animal species which researchers have collected and published relevant data and is freely available online. It was developed by researchers at the Human Ageing Genomic Resources (HAGR), encompassed species data with key attributes include taxonmic classification (from kingdom to species), common names, developmental milestone (eg: maturity days for both genders), reproductive traits (gestation/ incubation days, weaning days, and litter/ clutch sizes), physiological characteristics (adult weight and metabolic rate), and maximum longevity. To reduce bias of sample size of lifespan record, comparative longevity studies were performed with estimate sample size, and it is recorded in the dataset along with the determined quality. This data can be widely used in biological field, such as zoology, ecology, physiology and conservation biology (De-Magalhães & Costa, 2009).    
 
 # Questions/Aims
 
@@ -78,23 +76,15 @@ It is reproducible with reference mentioned.
 
 [This is the *main* section of your work. For example, if you are doing an EDA, this is where you would summarise it. If you are building something like a package or shiny app, a description of that package / app and demonstration of its function(s) would go here. Use appropriate sub-headings.]
 
-# References
-
-[References you have cited throughout your text]
-
 Library
 ```{r, include=F}
 library(tidyverse)
 ```
 
-## Data Tidy
+## Visualisation of different correlation
 
-
-
-
-## Correlation
 ```{r}
-ggplot(aves, aes(x = maximum_longevity_yrs)) +
+ggplot(, aes(x = maximum_longevity_yrs)) +
   geom_histogram() +
   coord_cartesian(xlim = c(1, 80))
 ```
@@ -106,13 +96,17 @@ ggplot(mammalia, aes(x =inter_litter_interbirth_interval , y = maximum_longevity
 ```
 
 ```{r}
-ggplot(aves, aes(x = adult_weight_g, y = maximum_longevity_yrs)) +
+ggplot(selected_order, aes(x = metabolic_rate_w , y = maximum_longevity_yrs)) +
   geom_point() + 
   geom_smooth() +
-  labs(y = "Max. Lifespan") +
-  coord_cartesian(xlim = c(1, 20000))
+  labs(y = "Max. Lifespan")
 ```
 
+```{r}
+ggplot(primates, aes(x = adult_weight_g, y = weaning_days)) +
+  geom_point() +
+  geom_smooth()
+```
 
 ```{r}
 ggplot(selected_order, aes(x = weaning_days, y = maximum_longevity_yrs)) +
@@ -122,8 +116,6 @@ ggplot(selected_order, aes(x = weaning_days, y = maximum_longevity_yrs)) +
   facet_wrap(~ order)
 ```
 
- +
-  coord_cartesian(xlim = c(1,10000))
 
 ```{r}
 ggplot(selected_order, aes(x = gestation_incubation_days , y = maximum_longevity_yrs)) +
@@ -133,14 +125,7 @@ ggplot(selected_order, aes(x = gestation_incubation_days , y = maximum_longevity
   facet_wrap(~ order)
 ```
 
-```{r}
-ggplot(selected_order, aes(x = metabolic_rate_w , y = maximum_longevity_yrs)) +
-  geom_point() + 
-  geom_smooth() +
-  labs(y = "Max. Lifespan")
-```
-
-Trying to fit a linear model
+## Linear model
 ```{r}
 model <- lm(data = mammalia_clean,
             adult_weight_g ~  
@@ -151,26 +136,42 @@ model <- lm(data = mammalia_clean,
 summary(model)
 ```
 
+
+
+# References
+
+[References you have cited throughout your text]
+
+AnAge url: https://genomics.senescence.info/species/index.html
+
+DE MAGALHÃES, J.P. and COSTA, J. (2009), A database of vertebrate longevity records and their relation to other life-history traits. Journal of Evolutionary Biology, 22: 1770-1774. https://doi.org/10.1111/j.1420-9101.2009.01783.x
+
+Lee, P. C. (1996) The meanings of weaning: Growth, lactation, and life history. Evolutionary anthropology. [Online] 5 (3), 87–98.
+
+Tacutu, R., Craig, T., Budovsky, A., Wuttke, D., Lehmann, G., Taranukha, D., Costa, J., Fraifeld, V. E., & de Magalhães, J. P. (2013). Human Ageing Genomic Resources: integrated databases and tools for the biology and genetics of ageing. Nucleic acids research, 41(Database issue), D1027–D1033. https://doi.org/10.1093/nar/gks1155
+
+
+
+## Correlation
+
+
+```{r}
+ggplot(aves, aes(x = adult_weight_g, y = maximum_longevity_yrs)) +
+  geom_point() + 
+  geom_smooth() +
+  labs(y = "Max. Lifespan") +
+  coord_cartesian(xlim = c(1, 20000))
+```
+
+
+
+
+
+
 __mentioning the reason of variance, eg: sample size__
 
 
 
-```{r}
-model_car <- lm(data = mammalia_clean, 
-            maximum_longevity_yrs ~ adult_weight_g +
-              order +
-              gestation_incubation_days +
-              weaning_days +
-              temperature_k)
-
-summary(model_car)
-```
-
-```{r}
-ggplot(primates, aes(x = adult_weight_g, y = weaning_days)) +
-  geom_point() +
-  geom_smooth()
-```
 
 
 With the correlation so far above, it is quite interesting to find gestation incubation days and weaning day have a high effect on the lifespan in mammal. I will further dig to it
@@ -187,6 +188,5 @@ reseach q
 
 Reference:
 
-Lee, P. C. (1996) The meanings of weaning: Growth, lactation, and life history. Evolutionary anthropology. [Online] 5 (3), 87–98.
 
 
