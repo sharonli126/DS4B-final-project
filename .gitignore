@@ -1,10 +1,16 @@
 .Rproj.user
 .Rhistory
-# where is it coming from, and why
+
 .RData
 .Ruserdata
+
+# due to size concern
 raw_data/anage_data.txt 
+
+# preveent OS-metadata being shared
 .DS_Store
+
+# due to size concern
 processed_data/primates_clean.csv
 processed_data/excluded_data.csv
 processed_data/rodentia_clean.csv
