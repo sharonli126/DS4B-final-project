@@ -30,25 +30,30 @@ AnAge is a database recording the longevity, ageing and life history across over
 
 # Questions/Aims
 
-__How do life-history traits leads to diversity of longevity between the orders Primates and Rodentia?__
+__How do life-history traits leads to diversity of longevity between four orders (Primates, Rodentia, Carivora and Artiodactyla)?__
 
 [A brief section which first states and then justifies the questions/aims of your EDA. Must provide evidence of independent research into what has been done before on these questions/aims. See above for examples.]
 
 Why do some animals live only a few years, but some can live several years, or even over a hundred year? This has been one of the most interesting questions in Biology all the time. While animals varies in lifespan, the order of Mammalia, which we, humans belong to, particularly present a diverse of lifespan. For hamster or mouse, they only have around 4 years lifespan but for a gorilla, it can live up to around 60 years, or humans and whales can live even over 100 years old! 
 
-There are various of life-history traits in the class of mammalia, such as Primates tend to have longer lifespans, extended juvenile dependency periods, and fewer offspring, while most rodents reproduce quickly, have shorter lifespans, and produce more offspring in their lifetime.  
+There are various of life-history traits in the class of mammalia, such as Primates tend to have longer lifespans, extended juvenile dependency periods, and fewer offspring, while most rodents reproduce quickly, have shorter lifespans, and produce more offspring in their lifetime. Meanwhile, species of Carnivora, like lions and bears, exhibit a range of lifespans and reproductive strategies, but have the lifespan is relatively higher than Rodentia. Similarly, Artiodactyla, which deer and cattle belong to, also presents its own unique life-history patterns.
 
-Therefore, to understand deeper of which factor correlate the most with lifespan in different order of mammalia, this study analyse a big database of aging and life history in over 4600 animal species from AnAge, aiming to examine and compare the different life traits impact on maximum longevity among mammalia.
+Therefore, to understand deeper of which trait correlate the most with lifespan in different order of mammalia, this study analyse a big database of aging and life history in over 4600 animal species from AnAge, aiming to examine and compare the different life history traits impact on maximum longevity among mammalia, particularly in four larger order group in mammalia, including Primates, Rodentia, Carnivora and Artiodactyla.
 
 # Raw data
 
 [Explains how and where to get the exact raw data you got]
 [Is reproducible by a person (required) and a machine (ideally)]
 
-```{r}
+```{r, include = F}
 library(readr)
 library(skimr)
+library(janitor)
+library(tidyverse)
+```
 
+
+```{r}
 raw_data <- read_delim("raw_data/anage_data.txt", 
                    delim = "\t", 
                    escape_double = FALSE, 
@@ -63,11 +68,8 @@ It is reproducible with reference mentioned.
 
 # Data wrangling
 
-__Since the data is orginally each variable forms a column, each observation forms a row and each type of observational unit forms a table, only name is are tidied.__
+Since the data is originally "each variable forms a column, each observation forms a row and each type of observational unit forms a table", so only column names are tidied.
 ```{r}
-library(janitor)
-library(tidyverse)
-
 tidied_data <- raw_data |>
   clean_names()
 
@@ -75,10 +77,13 @@ write.csv(tidied_data,
           "/Users/lisharon/Documents/GitHub/DB4S_final_project/processed_data/tidied_data.csv", 
           row.names = FALSE)
 
-mammalia <- tidied_data[tidied_data$class == "Mammalia",]
 ```
 
+Considering the reliability of this study, only trait with more than 0.55 complete rate will be examined and order with more than 150 rows will be observed, for filtering an acceptable sample size.
+
 ```{r}
+mammalia <- tidied_data[tidied_data$class == "Mammalia",]
+
 mammalia |> group_by(order) |> summarise(n = n()) |> arrange(desc(n))
 ```
 
@@ -86,7 +91,7 @@ mammalia |> group_by(order) |> summarise(n = n()) |> arrange(desc(n))
 skim(mammalia) |> filter(complete_rate > 0.55)
 ```
 
-Considering the reliability of this study, only trait with more than 0.5 complete rate will be examined and order group with more than 150 rows will be observed. 
+Therefore, the order of Rodentia, Carnivora, Primates and Artiodactyla are selected and trait including day of female maturity, gestation and weaning, number of babies per time and year, and adult weight.
 
 ```{r}
 # Filter data need for this report
@@ -96,30 +101,79 @@ mammalia_subset <- mammalia[, c("hagrid", "kingdom", "phylum", "class", "order",
 combined_order <- mammalia_subset[mammalia_subset$order %in% c("Rodentia", "Carnivora", "Primates", "Artiodactyla"),]
 ```
 
+Some weird data were identified and noted in the excluded data, by using grouping each order by genus, since species within the same genus should have a relative similar trait, then the mean ,and range of minimum value and maximum value were found, and using the 'summarise()' function to organised a table for visualizing which trait have a range to mean ratio over 1:2. After spotting out suspected genus, I will go to the table and have a look which species quite diverse to its genus group and online search whether there is other website/ paper mentioning its proper value for that trait. All data vary from information online will be noted in the excluded data.
+
 ```{r}
 excluded_data <- read_csv("processed_data/excluded_data.csv")
 ```
 
-[R chunks and prose which:]
-[Tidies up your raw data, outputs tidied_data.csv]
-[Cleans up your tidied data, outputs cleaned_data.csv]
+Since I am going to use the data with "na" for EDA and data without NA for linear model and correlation, therefore, there is two cleaned data, where cleaned_data is with "na", and clenaed_na_rm_data is without any "na' value 
 
 ```{r}
-cleaned_combined_data <- combined_order |> 
+cleaned_data <- combined_order |> 
   filter(!hagrid %in% excluded_data$hagrid)
+
+write.csv(cleaned_data, 
+          "/Users/lisharon/Documents/GitHub/DB4S_final_project/processed_data/cleaned_data.csv", 
+          row.names = FALSE)
 ```
 
 ```{r}
-cleaned_na_rm_data <- cleaned_combined_data |>
+cleaned_na_rm_data <- cleaned_data |>
   na.omit()
+
+write.csv(cleaned_na_rm_data, 
+          "/Users/lisharon/Documents/GitHub/DB4S_final_project/processed_data/cleaned_na_rm_data.csv", 
+          row.names = FALSE)
 ```
 
+Both cleaned_data and cleaned_na_rm_data are pivoted longer for plotting.
+
+```{r}
+long_cleaned_data <- cleaned_data |> 
+  pivot_longer(c(female_maturity_days, gestation_incubation_days, 
+                 weaning_days, litter_clutch_size, 
+                 litters_clutches_per_year, adult_weight_g), 
+               names_to = "trait",
+               values_to = "value") |>
+  mutate(trait = recode(trait,
+                        female_maturity_days = "Female Maturity (days)",
+                        gestation_incubation_days = "Pregnancy Period (days)",
+                        weaning_days = "Stopped Milk Feeding (days)", 
+                        litter_clutch_size = "Number of Babies in each Pregnancy",
+                        litters_clutches_per_year = "Number of Babies per Year", 
+                        adult_weight_g = "Adult Weight (g)"))
+```
+
+```{r}
+long_cleaned_na_rm_data <- cleaned_na_rm_data |> 
+  pivot_longer(c(female_maturity_days, gestation_incubation_days, 
+                 weaning_days, litter_clutch_size, 
+                 litters_clutches_per_year, adult_weight_g), 
+               names_to = "trait",
+               values_to = "value")
+```
 
 # Sanity checks
 
 [R chunks and prose which perform sanity checks on your cleaned data]
 [Remember that this really just summarises that your data are OK after you've cleaned them]
 [Most of the real sanity checks and data cleaning go on in the data_cleaning.Rmd file]
+
+```{r}
+skim(cleaned_data)
+```
+
+There should be no missing data for any columns for cleaned_na_rm_data.
+
+```{r}
+skim(cleaned_na_rm_data)
+```
+
+```{r}
+str(cleaned_data)
+```
+
 
 # Addressing the questions/aims
 
@@ -128,9 +182,9 @@ cleaned_na_rm_data <- cleaned_combined_data |>
 
 ## Visualisation of different correlation
 
-### Longevity Diversity between Primates and Rodentia
+### Longevity Diversity between four Order (Primatesm, Rodentia, Carivora and Artiodactyla)
 ```{r}
-ggplot(cleaned_combined_data, aes(x = maximum_longevity_yrs)) +
+ggplot(long_cleaned_data, aes(x = maximum_longevity_yrs)) +
   geom_histogram() +
   labs(x = "Max. Longevity (year)") +
   scale_x_continuous(breaks=seq(0, 120, by=20)) +
@@ -138,40 +192,68 @@ ggplot(cleaned_combined_data, aes(x = maximum_longevity_yrs)) +
   theme_minimal()
 ```
 
-The maximum longevity of Primates is spread mainly between 10 to 60 years, with few at above 60 or over 120 years. While longevity of Rodentia are all below 45 years, and half of them are below 10 years of lifespan, which is obviously lower than Primates in general. 
+According to the histogram, the maximum longevity of Primates is spread mainly between 10 to 60 years, with few at above 60 or over 120 years. While longevity of Rodentia are all below 45 years, and half of them are below 10 years of lifespan, which is obviously lower than Primates in general. 
 
 
-Both Primates and Rodentia have shown a positive correlation between inter-birth interval and maximum longevity
-
-```{r}
-ggplot(cleaned_combined_data, aes(x = adult_weight_g, y = weaning_days)) +
-  geom_point() +
-  geom_smooth() +
-  facet_wrap(~ order) +
+### Overall with "na"
+```{r, fig.height=10}
+ggplot(long_cleaned_data, aes(x = value, y = maximum_longevity_yrs)) +
+  geom_point(alpha = .1) +
+  geom_smooth(aes(color = order), method = "lm", alpha = .5, se = F) +
+  geom_smooth(color = "black", method = "lm", se = F) +
+  labs(y = "Max. Longevity (year", x = "Value of each Trait") +
+  facet_wrap(~ trait, scales = "free", ncol = 2) +
   theme_minimal()
 ```
 
-### Weaning day vs maximum longevity
+
+## Correlation Test
+
 ```{r}
-ggplot(cleaned_combined_data, aes(x = weaning_days, y = maximum_longevity_yrs)) +
-  geom_point() + 
-  geom_smooth() +
-  labs(y = "Max. Longevity (year", x = "Weaning Day") +
-  facet_wrap(~ order) +
-  theme_minimal()
+get_cor <- function(data, trait) {
+  
+  cor.test(data$maximum_longevity_yrs, data[[trait]])$estimate
+  
+}
+
+data = cleaned_data
+  
+overall_cor <- c(get_cor(data, "female_maturity_days"), 
+                 get_cor(data, "gestation_incubation_days"), 
+                 get_cor(data, "weaning_days"),
+                 get_cor(data, "litter_clutch_size"),
+                 get_cor(data, "litters_clutches_per_year"),
+                 get_cor(data, "adult_weight_g"))
+
+summary_cor <- data.frame(Trait = c("Female Maturity (day)", "Pregnancy Period (day)", "Milk Feeding Stop (day)", 
+                                    "Number of Babies per Pregnancy", "Number of Babies per Year", "Adult Weight (g)"),
+                          Overall = overall_cor
+                          )
+
+for (i in unique(long_cleaned_data$order)) {
+  
+  filtered <- cleaned_data[cleaned_data$order == i,]
+    
+  current_cor <- c(get_cor(filtered, "female_maturity_days"), 
+                 get_cor(filtered, "gestation_incubation_days"), 
+                 get_cor(filtered, "weaning_days"), 
+                 get_cor(filtered, "litter_clutch_size"), 
+                 get_cor(filtered, "litters_clutches_per_year"), 
+                 get_cor(filtered, "adult_weight_g"))
+  
+  summary_cor[[i]] <- current_cor
+  
+}
+
+summary_cor
+
 ```
 
-### Gestation period vs maximum longevity
-```{r}
-ggplot(cleaned_combined_data, aes(x = gestation_incubation_days , y = maximum_longevity_yrs)) +
-  geom_point() + 
-  geom_smooth() +
-  labs(y = "Max. Longevity (year)", x = "Gestation Period (day)") +
-  facet_wrap(~ order) +
-  theme_minimal()
-```
 
 ## Linear model
+
+Linear model can statistically show which independent variables (life history trait/ physiological characteristic) significantly associate with dependent variable (maximum longevity) for mammalia in general and each order.
+
 ```{r}
 cleaned_primates <- cleaned_na_rm_data[cleaned_na_rm_data$order == "Primates",]
 
@@ -182,11 +264,11 @@ cleaned_artiodactyla <- cleaned_na_rm_data[cleaned_na_rm_data$order == "Artiodac
 cleaned_carnivora <- cleaned_na_rm_data[cleaned_na_rm_data$order == "Carnivora",]
 ```
 
-
 ```{r}
 library(broom)
 
-model <- lm(data = cleaned_na_rm_data,
+linear_model_pvalue <- function(data) {
+  model <- lm(data = data,
             maximum_longevity_yrs ~ 
               female_maturity_days +
               weaning_days +
@@ -195,117 +277,72 @@ model <- lm(data = cleaned_na_rm_data,
               litters_clutches_per_year +
               adult_weight_g
               ) |> 
-  tidy()
-
-overall <- model$p.value
-
-model_artiodactyla <- lm(data = cleaned_artiodactyla,
-            maximum_longevity_yrs ~ 
-              female_maturity_days +
-              weaning_days +
-              gestation_incubation_days +
-              litter_clutch_size +
-              litters_clutches_per_year +
-              adult_weight_g
-              ) |> 
-  tidy()
-
-model_rodentia <- lm(data = cleaned_rodentia,
-            maximum_longevity_yrs ~ 
-              female_maturity_days +
-              weaning_days +
-              gestation_incubation_days +
-              litter_clutch_size +
-              litters_clutches_per_year +
-              adult_weight_g
-              ) |> 
-  tidy()
+    tidy()
   
+  pvalue <- model$p.value[-1]
   
-model_primates <- lm(data = cleaned_primates,
-            maximum_longevity_yrs ~ 
-              female_maturity_days +
-              weaning_days +
-              gestation_incubation_days +
-              litter_clutch_size +
-              litters_clutches_per_year +
-              adult_weight_g
-              ) |> 
-  tidy()
+  return(pvalue)
+}
 
-
-model_carnivora <- lm(data = cleaned_carnivora,
-            maximum_longevity_yrs ~ 
-              female_maturity_days +
-              weaning_days +
-              gestation_incubation_days +
-              litter_clutch_size +
-              litters_clutches_per_year +
-              adult_weight_g
-              ) |> 
-  tidy()
-
-carnivora_pvalue <- model_carnivora$p.value
-primates_pvalue <- model_primates$p.value
-rodentia_pvalue <- model_rodentia$p.value
-artiodactyla_pvalue <- model_artiodactyla$p.value
-
-pvalue_summary <- tibble(
-  Trait = c("(Intercept)", "Female Maturity Day", "Weaning Days", 
-            "Gestation Period", "Clutch Size", "Clutch Per Year",
-            "Adult Weight (g)"),
-  Overall = overall,
-  Primates = primates_pvalue,
-  Rodentia = rodentia_pvalue,
-  Carnivora = carnivora_pvalue,
-  Artiodactyla = artiodactyla_pvalue
+summary_lm <- data_frame(Trait = c("Female Maturity (day)", "Pregnancy Period (day)", "Milk Feeding Stop (day)", 
+                                    "Number of Babies per Pregnancy", "Number of Babies per Year", "Adult Weight (g)"),
+                         Overall = linear_model_pvalue(cleaned_na_rm_data)
 )
 
-pvalue_summary
+for (i in unique(cleaned_na_rm_data$order)) {
+  
+  filtered <- cleaned_na_rm_data[cleaned_na_rm_data$order == i,]
+    
+  
+  summary_lm[[i]] <- linear_model_pvalue(filtered)
+  
+}
+
 ```
 
---ignore
-library(tibble)
+```{r}
+# Function to convert p-values to significance stars
+convert_to_stars <- function(p) {
+  ifelse(p < 0.001, "***",
+         ifelse(p < 0.01, "**",
+                ifelse(p < 0.05, "*",
+                       ifelse(p < 0.1, ".", " "))))
+}
 
-# Correlation tests for Primates
-cor_primates_gestation <- cor.test(cleaned_primates$maximum_longevity_yrs,
-                                   cleaned_primates$gestation_incubation_days)$estimate
-cor_primates_weaning <- cor.test(cleaned_primates$maximum_longevity_yrs, cleaned_primates$weaning_days)$estimate
-cor_primates_interbirth <- cor.test(cleaned_primates$maximum_longevity_yrs,
-                                    cleaned_primates$inter_litter_interbirth_interval)$estimate
+# Apply the function to each column of p-values in the summary dataframe
+pvalue_summary$Overall <- sapply(pvalue_summary$Overall, convert_to_stars)
+pvalue_summary$Primates <- sapply(pvalue_summary$Primates, convert_to_stars)
+pvalue_summary$Rodentia <- sapply(pvalue_summary$Rodentia, convert_to_stars)
+pvalue_summary$Carnivora <- sapply(pvalue_summary$Carnivora, convert_to_stars)
+pvalue_summary$Artiodactyla <- sapply(pvalue_summary$Artiodactyla, convert_to_stars)
 
-# Correlation tests for Carnivora
-cor_primates_gestation <- cor.test(cleaned_primates$maximum_longevity_yrs,
-                                   cleaned_primates$gestation_incubation_days)$estimate
-cor_primates_weaning <- cor.test(cleaned_primates$maximum_longevity_yrs, cleaned_primates$weaning_days)$estimate
-cor_primates_interbirth <- cor.test(cleaned_primates$maximum_longevity_yrs,
-                                    cleaned_primates$inter_litter_interbirth_interval)$estimate
+# Print the summary
+print(pvalue_summary)
 
-# Correlation tests for Artiodactyla
+```
 
-# Correlation tests for Rodentia
-cor_rodentia_gestation <- cor.test(cleaned_rodentia$maximum_longevity_yrs,
-                                   cleaned_rodentia$gestation_incubation_days)$estimate
-cor_rodentia_weaning <- cor.test(cleaned_rodentia$maximum_longevity_yrs, cleaned_rodentia$weaning_days)$estimate
-cor_rodentia_interbirth <- cor.test(cleaned_rodentia$maximum_longevity_yrs, cleaned_rodentia$inter_litter_interbirth_interval)$estimate
+```{r}
+long_na_rm_data <- cleaned_na_rm_data |>
+pivot_longer(c(female_maturity_days, gestation_incubation_days, 
+                 weaning_days, litter_clutch_size, 
+                 litters_clutches_per_year, adult_weight_g), 
+               names_to = "trait",
+               values_to = "value")
+```
 
-# Summarize in a tibble
-correlation_summary <- tibble(
-  Trait = c("Gestation/Incubation Days", "Weaning Days", "Interbirth Interval"),
-  Primates = c(cor_primates_gestation, cor_primates_weaning, cor_primates_interbirth),
-  Rodentia = c(cor_rodentia_gestation, cor_rodentia_weaning, cor_rodentia_interbirth)
-)
-
-print(correlation_summary)
-
-
+```{r, fig.height=10}
+ggplot(long_na_rm_data, aes(x = value, y = maximum_longevity_yrs, color = order)) +
+  geom_point(alpha = .1) +
+  geom_smooth(method = "lm") +
+  labs(y = "Max. Longevity (year", x = "Value of each Trait") +
+  facet_wrap(~ trait, scales = "free", ncol = 1) +
+  theme_minimal()
+```
 
 
 # References
 
 [References you have cited throughout your text]
-
-AnAge url: https://genomics.senescence.info/species/index.html
 
 DE MAGALHÃES, J.P. and COSTA, J. (2009), A database of vertebrate longevity records and their relation to other life-history traits. Journal of Evolutionary Biology, 22: 1770-1774. https://doi.org/10.1111/j.1420-9101.2009.01783.x
 
@@ -322,7 +359,7 @@ Tacutu, R., Craig, T., Budovsky, A., Wuttke, D., Lehmann, G., Taranukha, D., Cos
 # Question would like to ask:
 
 1. do i have to explain the code, if yes in the chunk or outside?
-2. the data originally looks tidy (like all columns and values looks make sense and can be visualized), do i have to remove all NA for a tidy data?
+2. the data originally looks tidy (like all columns and values looks make sense and can be visualized), do i have to remove all NA for a tidy data? 
 3. Actually do i have to say why i chose 0.55 for the complete rate of data selecting?
 
 
@@ -344,5 +381,11 @@ Mammalia:
 Data cleaning: use clean data for lm, since it is comparing all factors but for data plotting it can be regular data
 
 Analysis: mentioning the variance of sample size
+
+To do list 
+
+- move all the data cleaning, filtering to data cleaning rmd
+
+- always mention why i use this and that test/ plot
 
 
