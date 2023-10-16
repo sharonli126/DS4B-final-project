@@ -26,25 +26,25 @@ Filtering only the data I want to investigate and identify is there any weird da
 ```{r}
 mammalia <- data[data$class == "Mammalia",]
 
-mammalia_subset <- mammalia[, c("hagrid", "kingdom", "phylum", "class", "order", "family", "genus", "species", "common_name", "gestation_incubation_days", "weaning_days", "adult_weight_g", "inter_litter_interbirth_interval", "maximum_longevity_yrs" )]
+mammalia_subset <- mammalia[, c("hagrid", "kingdom", "phylum", "class", "order", "family", "genus", "species", "common_name", "female_maturity_days", "gestation_incubation_days", "weaning_days", "litter_clutch_size", "litters_clutches_per_year", "adult_weight_g", "maximum_longevity_yrs" )]
 
 primates<- mammalia_subset[mammalia_subset$order == "Primates",]
 rodentia <- mammalia_subset[mammalia_subset$order == "Rodentia",]
+carnivora <- mammalia_subset[mammalia_subset$order == "Carnivora",]
+artiodactyla <- mammalia_subset[mammalia_subset$order == "Artiodactyla",]
+
+combined_order <- rbind(primates, rodentia, carnivora, artiodactyla)
 ```
 
 Checking number of NA in the data
-
 ```{r}
-skim(primates)
+skim(combined_order)
 ```
 
-```{r}
-skim(rodentia)
-```
 
-Here we try to remove nonsense data 
+Here I try to remove nonsense data.
 
-Assuming all species from same genus have a similar feature, so they wont have a vary difference
+Assuming all species from same genus have a similar feature, so they wont have a vary difference. I am going to compare the difference between the maximum value and minimum value with the mean in each trait of genus have more than 1 row. For those with difference to mean over around a 1:3 ratio. I will find is there any paper/ website, supporting the varied value. If I the data I found was not similar to it, I will add it to the excluded data. 
 ```{r}
 primates|>
 group_by(genus) |>
@@ -61,8 +61,10 @@ group_by(genus) |>
 ```{r}
 primates|>
 group_by(genus) |>
-  summarise(range_interbirth = max(inter_litter_interbirth_interval, na.rm = T) - min(inter_litter_interbirth_interval, na.rm = T), 
-            mean_interbirth = mean (inter_litter_interbirth_interval, na.rm = T),
+  summarise(range_clutch_size = max(litter_clutch_size, na.rm = T) - min(litter_clutch_size, na.rm = T), 
+            mean_clutch_size = mean (litter_clutch_size, na.rm = T),
+            range_number_clutch = max(litters_clutches_per_year, na.rm = T) - min(litters_clutches_per_year, na.rm = T), 
+            mean_number_clutch = mean (litters_clutches_per_year, na.rm = T),
             range_weight = max(adult_weight_g, na.rm = T) - min(adult_weight_g, na.rm = T), 
             mean_weight = mean (adult_weight_g, na.rm = T), n = n()) |>
   filter(n > 1)
@@ -84,25 +86,65 @@ group_by(genus) |>
 ```{r}
 rodentia|>
 group_by(genus) |>
-  summarise(range_interbirth = max(inter_litter_interbirth_interval, na.rm = T) - min(inter_litter_interbirth_interval, na.rm = T), 
-            mean_interbirth = mean (inter_litter_interbirth_interval, na.rm = T),
+  summarise(range_clutch_size = max(litter_clutch_size, na.rm = T) - min(litter_clutch_size, na.rm = T), 
+            mean_clutch_size = mean (litter_clutch_size, na.rm = T),
+            range_number_clutch = max(litters_clutches_per_year, na.rm = T) - min(litters_clutches_per_year, na.rm = T), 
+            mean_number_clutch = mean (litters_clutches_per_year, na.rm = T),
             range_weight = max(adult_weight_g, na.rm = T) - min(adult_weight_g, na.rm = T), 
             mean_weight = mean (adult_weight_g, na.rm = T), n = n()) |>
   filter(n > 1)
 ```
 
-Removing all the NA or weird data
 ```{r}
-primates_filtered <- primates |> 
-  filter(!hagrid %in% c("02677", "02675", "02749", "02740", "02790"))
-
-rodentia_filtered <- rodentia|> 
-  filter(!hagrid %in% c("02857", "03157", "03192"))
-
-primate_clean <- na.omit(primates_filtered)
-
-rodentia_clean <- na.omit(rodentia_filtered)
+carnivora|>
+group_by(genus) |>
+  summarise(range_gid = max(gestation_incubation_days, na.rm = T) - min(gestation_incubation_days, na.rm = T), 
+            mean_gid = mean (gestation_incubation_days, na.rm = T),
+            range_wd = max(weaning_days, na.rm = T) - min(weaning_days, na.rm = T), 
+            mean_wd = mean (weaning_days, na.rm = T),
+            range_longevity = max(maximum_longevity_yrs, na.rm = T) - min(maximum_longevity_yrs, na.rm = T), 
+            mean_longivity = mean (maximum_longevity_yrs, na.rm = T), 
+            n = n()) |>
+  filter(n > 1)
 ```
+
+```{r}
+carnivora|>
+group_by(genus) |>
+  summarise(range_clutch_size = max(litter_clutch_size, na.rm = T) - min(litter_clutch_size, na.rm = T), 
+            mean_clutch_size = mean (litter_clutch_size, na.rm = T),
+            range_number_clutch = max(litters_clutches_per_year, na.rm = T) - min(litters_clutches_per_year, na.rm = T), 
+            mean_number_clutch = mean (litters_clutches_per_year, na.rm = T),
+            range_weight = max(adult_weight_g, na.rm = T) - min(adult_weight_g, na.rm = T), 
+            mean_weight = mean (adult_weight_g, na.rm = T), n = n()) |>
+  filter(n > 1)
+```
+
+```{r}
+artiodactyla|>
+group_by(genus) |>
+  summarise(range_gid = max(gestation_incubation_days, na.rm = T) - min(gestation_incubation_days, na.rm = T), 
+            mean_gid = mean (gestation_incubation_days, na.rm = T),
+            range_wd = max(weaning_days, na.rm = T) - min(weaning_days, na.rm = T), 
+            mean_wd = mean (weaning_days, na.rm = T),
+            range_longevity = max(maximum_longevity_yrs, na.rm = T) - min(maximum_longevity_yrs, na.rm = T), 
+            mean_longivity = mean (maximum_longevity_yrs, na.rm = T), 
+            n = n()) |>
+  filter(n > 1)
+```
+
+```{r}
+artiodactyla|>
+group_by(genus) |>
+  summarise(range_clutch_size = max(litter_clutch_size, na.rm = T) - min(litter_clutch_size, na.rm = T), 
+            mean_clutch_size = mean (litter_clutch_size, na.rm = T),
+            range_number_clutch = max(litters_clutches_per_year, na.rm = T) - min(litters_clutches_per_year, na.rm = T), 
+            mean_number_clutch = mean (litters_clutches_per_year, na.rm = T),
+            range_weight = max(adult_weight_g, na.rm = T) - min(adult_weight_g, na.rm = T), 
+            mean_weight = mean (adult_weight_g, na.rm = T), n = n()) |>
+  filter(n > 1)
+```
+
 
 
 
