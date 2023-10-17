@@ -15,8 +15,8 @@ output:
 ---
 # Word/figure count
 
-Words: []
-Figures: []
+Words: [1996]
+Figures: [6]
 
 # Location on GitHub
 
@@ -30,11 +30,11 @@ AnAge is a database recording the longevity, ageing and life history across over
 
 __How do life-history traits leads to diversity of longevity between four orders (Primates, Rodentia, Carivora and Artiodactyla)?__
 
-Why do some animals live only a few years, but some can live several years, or even over a hundred year? This has been one of the most interesting questions in Biology all the time. While animals varies in lifespan, the order of Mammalia, which we, humans belong to, particularly present a diverse of lifespan. For hamster or mouse, they only have around 4 years lifespan but for a gorilla, it can live up to around 60 years, or humans and whales can live even over 100 and 200 years old! 
+Why do some animals live only a few years, but some can live several years, or even over a hundred year? This has been one of the most interesting questions in Biology all the time. While animals varies in lifespan, the order of Mammalia, which we, humans belong to, notably present a diverse of lifespan. For hamster or mouse, they only have around 4 years lifespan but for a gorilla, it can live up to around 60 years, or humans and whales can live even over 100 and 200 years old! 
 
 There are various of life-history traits in the class of mammalia, such as Primates tend to have longer lifespans, extended juvenile dependency periods, and fewer offspring, while most rodents reproduce quickly, have shorter lifespans, and produce more offspring in their lifetime. Meanwhile, species of Carnivora, like lions and bears, exhibit a range of lifespans and reproductive strategies, but have the lifespan is relatively higher than Rodentia. Similarly, Artiodactyla, which deer and cattle belong to, also presents its own unique life-history patterns. [2,3]
 
-Therefore, to understand deeper of which trait correlate the most with lifespan in different order of mammalia, this study analyse a big database of aging and life history in over 4600 animal species from AnAge, aiming to examine and compare the different life history traits impact on maximum longevity among mammalia, particularly in four larger order group in mammalia, including Primates, Rodentia, Carnivora and Artiodactyla.
+Therefore, to understand deeper of which trait correlate the most with lifespan in different order of mammalia, this study analyse a big database of aging and life history traits in over 4600 animal species from AnAge, aiming to examine and compare the different life history traits impact on maximum longevity among mammalia, particularly in four larger order group, including Primates, Rodentia, Carnivora and Artiodactyla.
 
 # Raw data
 
@@ -133,7 +133,7 @@ str(cleaned_data)
 ```{r}
 ggplot(long_cleaned_data, aes(x = maximum_longevity_yrs)) +
   geom_histogram() +
-  labs(x = "Max. Longevity (year)") +
+  labs(x = "Maximum Longevity (year)") +
   scale_x_continuous(breaks=seq(0, 120, by=20)) +
   facet_wrap(~ order) +
   theme_minimal()
@@ -292,7 +292,7 @@ for (i in unique(na_rm_data$order)) {
   
 }
 
-summary_lm
+kable(summary_lm)
 ```
 
 ```{r}
@@ -326,7 +326,7 @@ The LM have found female maturity, number of babies each pregnancy and per year,
 
 Meanwhile, when fitting data from four orders separately into the LM, distinct associations emerge for each trait across the orders. The female maturity only remain the most significant in Carnivora, while gestation period stand out among Primates and Rodentia, and adult weight for Artiodactyla. 
 
-Gestation period in determining the lifespan of Primates and Rodentia can be understood through its representation of parental investment Many mammal, especially the larger ones usually adopt "K-strategies" in reproduction. This refers to reproducing slower and producing less offspring with greater care and investment in each offspring, constract with the "R-strategies" [3,6]. Moreover, for Artiodactyla, they are usually a prey in the wild, larger size of them are generally less prone to predation and leading to a lower mortality rate, hence, extending their lifespan but this is not an universal trend in mammals [5].
+Pregnancy period in determining the lifespan of Primates and Rodentia can be understood through its representation of parental investment Many mammal, especially the larger ones usually adopt "K-strategies" in reproduction. This refers to reproducing slower and producing less offspring with greater care and investment in each offspring, contrast with the "R-strategies" [3,6]. Moreover, for Artiodactyla, they are usually a prey in the wild, larger size of them are generally less prone to predation and leading to a lower mortality rate, hence, extending their lifespan but this is not an universal trend in mammals [5].
 
 Comparing the result from LM and CT, they are not alligned, such as adult weight is highly significant but is having the least positive correlation overall, and both Primates and Rodentia are having highest degree of correlation with weaning day (milk feeding stop) but it is not significant in linear model. This result might due to the different, since the LM is using the data without missing value, which amount is less than a half of data with missing value. 
 
