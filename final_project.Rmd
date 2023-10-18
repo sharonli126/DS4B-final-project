@@ -129,19 +129,7 @@ str(cleaned_data)
 
 ## Exploratory Data Analysis
 
-### Histogram of Maximum Longevity of the Four Orders
-```{r}
-ggplot(long_cleaned_data, aes(x = maximum_longevity_yrs)) +
-  geom_histogram() +
-  labs(x = "Maximum Longevity (year)") +
-  scale_x_continuous(breaks=seq(0, 120, by=20)) +
-  facet_wrap(~ order) +
-  theme_minimal()
-```
-
-According to the histogram, the maximum longevity of Primates is spread mainly between 10 to 60 years, with few at above 60 or over 120 years. Carnivora has a similar distribution as Artiodactyiam whereas both of them have a range from 10 to 60, but Artiodactyia has a larger count in from 20-40.  While longevity of Rodentia are all below 45 years, and half of them are below 10 years of lifespan, which is obviously lower than all the others in general. 
-
-In this study, one of the challenge faced is the presence of missing value in data. To address this, both missing value retained data and removed data are anaylsed by visuliation, which allow pattern in both data be observed and compared.
+In this study, one of the challenge faced is the presence of missing value in data. To address this, both missing value retained data and removed data are analysed by visualization, which allow pattern in both data be observed and compared.
 
 Both cleaned_data and cleaned_na_rm_data are pivoted longer for plotting.
 
@@ -162,7 +150,12 @@ long_cleaned_data <- cleaned_data |>
 ```
 
 ```{r}
-long_cleaned_na_rm_data <- cleaned_na_rm_data |> 
+na_rm_data <- cleaned_data |>
+  na.omit()
+```
+
+```{r}
+long_na_rm_data <- na_rm_data |> 
   pivot_longer(c(female_maturity_days, gestation_incubation_days, 
                  weaning_days, litter_clutch_size, 
                  litters_clutches_per_year, adult_weight_g), 
@@ -176,6 +169,20 @@ long_cleaned_na_rm_data <- cleaned_na_rm_data |>
                         litters_clutches_per_year = "Number of Babies per Year", 
                         adult_weight_g = "Adult Weight (g)")) 
 ```
+
+### Histogram of Maximum Longevity of the Four Orders
+
+```{r}
+ggplot(long_cleaned_data, aes(x = maximum_longevity_yrs)) +
+  geom_histogram() +
+  labs(x = "Maximum Longevity (year)") +
+  scale_x_continuous(breaks=seq(0, 120, by=20)) +
+  facet_wrap(~ order) +
+  theme_minimal()
+```
+
+According to the histogram, the maximum longevity of Primates is spread mainly between 10 to 60 years, with few at above 60 or over 120 years. Carnivora has a similar distribution as Artiodactyiam whereas both of them have a range from 10 to 60, but Artiodactyia has a larger count in from 20-40.  While longevity of Rodentia are all below 45 years, and half of them are below 10 years of lifespan, which is obviously lower than all the others in general. 
+
 
 ### Correlation of Different Traits and Maximum Longevity (with missing value)
 
@@ -191,7 +198,7 @@ ggplot(long_cleaned_data, aes(x = value, y = maximum_longevity_yrs, color = orde
 ### Correlation of Different Traits and Maximum Longevity (without missing value)
 
 ```{r, fig.height=10}
-ggplot(long_cleaned_na_rm_data, aes(x = value, y = maximum_longevity_yrs)) +
+ggplot(long_na_rm_data, aes(x = value, y = maximum_longevity_yrs)) +
   geom_point(aes(color = order), alpha = .1) +
   geom_smooth(aes(color = order), method = "lm", alpha = .5) +
   labs(y = "Max. Longevity (year)", x = "Value of each Trait") +
@@ -252,11 +259,6 @@ The CT have reflected the same trend as the two correlation plot in EDA section.
 Linear model (LM) can statistically show which independent variables (life history trait/ physiological characteristic) significantly associate with dependent variable (maximum longevity) for mammalia in general and each order.
 
 To fit a LM, there should be no missing value, so that the trait significance can be compared more accurately.
-
-```{r}
-na_rm_data <- cleaned_data |>
-  na.omit()
-```
 
 ```{r}
 library(broom)
@@ -328,7 +330,7 @@ Meanwhile, when fitting data from four orders separately into the LM, distinct a
 
 Pregnancy period in determining the lifespan of Primates and Rodentia can be understood through its representation of parental investment Many mammal, especially the larger ones usually adopt "K-strategies" in reproduction. This refers to reproducing slower and producing less offspring with greater care and investment in each offspring, contrast with the "R-strategies" [3,6]. Moreover, for Artiodactyla, they are usually a prey in the wild, larger size of them are generally less prone to predation and leading to a lower mortality rate, hence, extending their lifespan but this is not an universal trend in mammals [5].
 
-Comparing the result from LM and CT, they are not alligned, such as adult weight is highly significant but is having the least positive correlation overall, and both Primates and Rodentia are having highest degree of correlation with weaning day (milk feeding stop) but it is not significant in linear model. This result might due to the different, since the LM is using the data without missing value, which amount is less than a half of data with missing value. 
+Comparing the result from LM and CT, they are not aligned, such as adult weight is highly significant but is having the least positive correlation overall, and both Primates and Rodentia are having highest degree of correlation with weaning day (milk feeding stop) but it is not significant in linear model. This result might due to the different, since the LM is using the data without missing value, which amount is less than a half of data with missing value. 
 
 However, in conclusion, all visulisation, CT, and LM have shown the relationship of different traits with maximum longevity and these correlations are varied in different orders, the most significant trait associated with their lifespan can be different too. With AnAge becoming more complete and larger, I believe a more accurate and wide linking between different life-history traits and lifespan can be analysed.
 
