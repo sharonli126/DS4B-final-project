@@ -15,7 +15,7 @@ output:
 ---
 # Word/figure count
 
-Words: [1996]
+Words: [1995]
 Figures: [6]
 
 # Location on GitHub
@@ -28,13 +28,11 @@ AnAge is a database recording the longevity, ageing and life history across over
 
 # Questions/Aims
 
-__How do life-history traits leads to diversity of longevity between four orders (Primates, Rodentia, Carivora and Artiodactyla)?__
-
 Why do some animals live only a few years, but some can live several years, or even over a hundred year? This has been one of the most interesting questions in Biology all the time. While animals varies in lifespan, the order of Mammalia, which we, humans belong to, notably present a diverse of lifespan. For hamster or mouse, they only have around 4 years lifespan but for a gorilla, it can live up to around 60 years, or humans and whales can live even over 100 and 200 years old! 
 
-There are various of life-history traits in the class of mammalia, such as Primates tend to have longer lifespans, extended juvenile dependency periods, and fewer offspring, while most rodents reproduce quickly, have shorter lifespans, and produce more offspring in their lifetime. Meanwhile, species of Carnivora, like lions and bears, exhibit a range of lifespans and reproductive strategies, but have the lifespan is relatively higher than Rodentia. Similarly, Artiodactyla, which deer and cattle belong to, also presents its own unique life-history patterns. [2,3]
+There are various of life-history traits in the class of mammalia, such as Primates tend to have longer lifespans, extended juvenile dependency periods, and fewer offspring, while most rodents reproduce quickly with shorter lifespans, having more offspring in their lifetime. Meanwhile, species of Carnivora and Artiodactyla, like lions and deer respectively, exhibit a range of lifespans and reproductive strategies, but their lifespan is relatively higher than Rodentia [2,3].
 
-Therefore, to understand deeper of which trait correlate the most with lifespan in different order of mammalia, this study analyse a big database of aging and life history traits in over 4600 animal species from AnAge, aiming to examine and compare the different life history traits impact on maximum longevity among mammalia, particularly in four larger order group, including Primates, Rodentia, Carnivora and Artiodactyla.
+Therefore, to understand deeper of which trait correlate the most with lifespan in different order of mammalia, this study analyse a big database of aging and life-history traits in over 4600 animal species from AnAge, aiming to examine and compare life-history traits impact on maximum longevity among mammalia, particularly in four larger order group, including Primates, Rodentia, Carnivora and Artiodactyla.
 
 # Raw data
 
@@ -55,7 +53,6 @@ raw_data <- read_delim("raw_data/anage_data.txt",
                    trim_ws = TRUE)
 
 ```
-
 
 
 # Data wrangling
@@ -83,7 +80,7 @@ mammalia |> group_by(order) |> summarise(n = n()) |> arrange(desc(n))
 skim(mammalia) |> filter(complete_rate > 0.55)
 ```
 
-Therefore, the order of Rodentia, Carnivora, Primates and Artiodactyla are selected and trait including day of female maturity, gestation and weaning, number of babies per time and year, and adult weight.
+Therefore, the top four orders are filtered and trait including day of female maturity, gestation and weaning, number of babies per time and year, and adult weight.
 
 ```{r}
 # Filter data need for this report
@@ -93,7 +90,7 @@ mammalia_subset <- mammalia[, c("hagrid", "kingdom", "phylum", "class", "order",
 combined_order <- mammalia_subset[mammalia_subset$order %in% c("Rodentia", "Carnivora", "Primates", "Artiodactyla"),]
 ```
 
-Some weird datas were identified and noted in the excluded data, through grouping all value by genus, mean and range of max and min value were found. Suspected genus with a range close to mean will searched online. All data vary from information online will be noted in the excluded data.
+Some weird observations were identified and noted in the excluded data, through grouping all value by genus, summeraising mean, range of max and min value were found. Suspected genus with a range close to the mean will be searched online. All data vary from information online will be noted in the excluded data.
 
 ```{r}
 excluded_data <- read_csv("processed_data/excluded_data.csv")
@@ -134,19 +131,23 @@ In this study, one of the challenge faced is the presence of missing value in da
 Both cleaned_data and cleaned_na_rm_data are pivoted longer for plotting.
 
 ```{r}
-long_cleaned_data <- cleaned_data |> 
-  pivot_longer(c(female_maturity_days, gestation_incubation_days, 
+long_mutate <- function(data){
+  data|>
+    pivot_longer(c(female_maturity_days, gestation_incubation_days, 
                  weaning_days, litter_clutch_size, 
                  litters_clutches_per_year, adult_weight_g), 
                names_to = "trait",
                values_to = "value") |>
-  mutate(trait = recode(trait, # code in mutate functioni from chatGPT
+  mutate(trait = recode(trait, # code in mutate function from chatGPT
                         female_maturity_days = "Female Maturity (days)",
                         gestation_incubation_days = "Pregnancy Period (days)",
                         weaning_days = "Stopped Milk Feeding (days)", 
                         litter_clutch_size = "Number of Babies in each Pregnancy",
                         litters_clutches_per_year = "Number of Babies per Year", 
                         adult_weight_g = "Adult Weight (g)"))
+}
+
+long_cleaned_data <- long_mutate(cleaned_data)
 ```
 
 ```{r}
@@ -155,19 +156,7 @@ na_rm_data <- cleaned_data |>
 ```
 
 ```{r}
-long_na_rm_data <- na_rm_data |> 
-  pivot_longer(c(female_maturity_days, gestation_incubation_days, 
-                 weaning_days, litter_clutch_size, 
-                 litters_clutches_per_year, adult_weight_g), 
-               names_to = "trait",
-               values_to = "value") |>
-  mutate(trait = recode(trait, 
-                        female_maturity_days = "Female Maturity (days)",
-                        gestation_incubation_days = "Pregnancy Period (days)",
-                        weaning_days = "Stopped Milk Feeding (days)", 
-                        litter_clutch_size = "Number of Babies in each Pregnancy",
-                        litters_clutches_per_year = "Number of Babies per Year", 
-                        adult_weight_g = "Adult Weight (g)")) 
+long_na_rm_data <- long_mutate(na_rm_data)
 ```
 
 ### Histogram of Maximum Longevity of the Four Orders
@@ -184,24 +173,26 @@ ggplot(long_cleaned_data, aes(x = maximum_longevity_yrs)) +
 According to the histogram, the maximum longevity of Primates is spread mainly between 10 to 60 years, with few at above 60 or over 120 years. Carnivora has a similar distribution as Artiodactyiam whereas both of them have a range from 10 to 60, but Artiodactyia has a larger count in from 20-40.  While longevity of Rodentia are all below 45 years, and half of them are below 10 years of lifespan, which is obviously lower than all the others in general. 
 
 
-### Correlation of Different Traits and Maximum Longevity (with missing value)
+### Correlation of Different Traits and Maximum Longevity (with missing-value)
 
 ```{r, fig.height=10}
 ggplot(long_cleaned_data, aes(x = value, y = maximum_longevity_yrs, color = order)) +
-  geom_point(aes(color = order), alpha = .1) +
-  geom_smooth(aes(color = order), method = "lm", alpha = .5) +
-  labs(y = "Max. Longevity (year", x = "Value of each Trait") +
+  geom_point(alpha = .1) +
+  geom_smooth(method = "lm", alpha = .3) +
+  labs(y = "Maximum Longevity (year)", x = "Value of Trait") +
   facet_wrap(~ trait, scales = "free", ncol = 2) +
   theme_minimal()
 ```
 
-### Correlation of Different Traits and Maximum Longevity (without missing value)
+The visualization above have shown the linear relationship of each traits with maximum longevity. All directions are the same in 
+
+### Correlation of Different Traits and Maximum Longevity (without missing-value)
 
 ```{r, fig.height=10}
-ggplot(long_na_rm_data, aes(x = value, y = maximum_longevity_yrs)) +
-  geom_point(aes(color = order), alpha = .1) +
-  geom_smooth(aes(color = order), method = "lm", alpha = .5) +
-  labs(y = "Max. Longevity (year)", x = "Value of each Trait") +
+ggplot(long_na_rm_data, aes(x = value, y = maximum_longevity_yrs, color = order)) +
+  geom_point(alpha = .1) +
+  geom_smooth(method = "lm", alpha = .5) +
+  labs(y = "Maximum Longevity (year)", x = "Value of Trait") +
   facet_wrap(~ trait, scales = "free", ncol = 2) +
   theme_minimal()
 ```
@@ -210,7 +201,7 @@ As compared with the plotting with missing value, the trend of all trait does no
 
 ## Correlation Test
 
-The correlation test (CT) can provide a quick look on the strength and direction of linear relationship among each trait and lifespan. Using the data with missing value, a more accurate relationship and trend can be identified in its larger sample size.
+The correlation test (CT) can provide a quick look on the strength and direction of linear relationship between traits and lifespan. Using the data with missing value, a more accurate relationship and trend can be identified in its larger sample size.
 
 ```{r}
 get_cor <- function(data, trait) {
@@ -218,6 +209,9 @@ get_cor <- function(data, trait) {
   cor.test(data$maximum_longevity_yrs, data[[trait]])$estimate
   
 }
+
+trait = c("Female Maturity (day)", "Pregnancy Period (day)", "Milk Feeding Stop (day)", 
+          "Number of Babies per Pregnancy", "Number of Babies per Year", "Adult Weight (g)")
 
 data = cleaned_data
   
@@ -228,8 +222,7 @@ overall_cor <- c(get_cor(data, "female_maturity_days"),
                  get_cor(data, "litters_clutches_per_year"),
                  get_cor(data, "adult_weight_g"))
 
-summary_cor <- data.frame(Trait = c("Female Maturity (day)", "Pregnancy Period (day)", "Milk Feeding Stop (day)", 
-                                    "Number of Babies per Pregnancy", "Number of Babies per Year", "Adult Weight (g)"),
+summary_cor <- data.frame(Trait = trait,
                           Overall = round(overall_cor, 3)
                           )
 
@@ -280,8 +273,7 @@ linear_model_pvalue <- function(data) {
   return(pvalue)
 }
 
-summary_lm <- data_frame(Trait = c("Female Maturity (day)", "Pregnancy Period (day)", "Milk Feeding Stop (day)", 
-                                    "Number of Babies per Pregnancy", "Number of Babies per Year", "Adult Weight (g)"),
+summary_lm <- data_frame(Trait = trait,
                          Overall = linear_model_pvalue(na_rm_data)
 )
 
