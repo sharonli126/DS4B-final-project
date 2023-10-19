@@ -1584,7 +1584,7 @@ in Mammalia</h1>
 
 <div id="wordfigure-count" class="section level1">
 <h1>Word/figure count</h1>
-<p>Words: [1999] Figures: [6]</p>
+<p>Words: [1997] Figures: [6]</p>
 </div>
 <div id="location-on-github" class="section level1">
 <h1>Location on GitHub</h1>
@@ -1601,7 +1601,7 @@ developmental milestone, reproductive traits , physiological
 characteristics, and maximum longevity. To minimise bias, the data
 incorporates estimated sample sizes and quality assessments. It can be
 widely used in biological field, such as zoology, ecology, and
-conservation biology [1].</p>
+conservation biology[1].</p>
 </div>
 <div id="questionsaims" class="section level1">
 <h1>Questions/Aims</h1>
@@ -1621,7 +1621,7 @@ dependency periods, and fewer offspring, while most rodents is in
 contrast, and have more offspring in their lifetime. Meanwhile, species
 of Carnivora and Artiodactyla, like lions and deer respectively, exhibit
 a range of lifespans and reproductive strategies, but their lifespan is
-relatively higher than Rodentia [2,3].</p>
+relatively higher than Rodentia[2,3].</p>
 <p>Therefore, to understand which trait correlate the most with lifespan
 in different order of mammalia, this study analyse the big database of
 aging and life-history traits from AnAge, aiming to examine and compare
@@ -2048,8 +2048,8 @@ group.</p>
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<p>NA is remained, since a larger sample size is better for EDA and
-correlation testing.</p>
+<p>NA is remained as larger sample size is better for EDA and
+correlation test.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>cleaned_data <span class="ot">&lt;-</span> combined_order <span class="sc">|&gt;</span> </span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>hagrid <span class="sc">%in%</span> excluded_data<span class="sc">$</span>hagrid)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2059,8 +2059,7 @@ correlation testing.</p>
 </div>
 <div id="sanity-checks" class="section level1">
 <h1>Sanity checks</h1>
-<p>The missing value and the complete rate should still be similar as
-before.</p>
+<p>The n_missing and the complete_rate should remain similar.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">skim</span>(cleaned_data)</span></code></pre></div>
 <table>
 <caption>Data summary</caption>
@@ -2363,7 +2362,7 @@ removed data are analysed by visualization, which allow pattern in both
 data be observed and compared.</p>
 <p>Both cleaned_data and cleaned_na_rm_data are pivoted longer for
 plotting.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>long_mutate <span class="ot">&lt;-</span> <span class="cf">function</span>(data){</span>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>long_mutate <span class="ot">&lt;-</span> <span class="cf">function</span>(data){ <span class="co"># changing traits to easier understanding name</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  data<span class="sc">|&gt;</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pivot_longer</span>(<span class="fu">c</span>(female_maturity_days, gestation_incubation_days, </span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                 weaning_days, litter_clutch_size, </span>
@@ -2450,43 +2449,42 @@ the data with missing value, a more accurate relationship and trend can
 be identified in its larger sample size.</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>get_cor <span class="ot">&lt;-</span> <span class="cf">function</span>(data, trait) {</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># function to obtain &quot;estimation in cor.test</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cor.test</span>(data<span class="sc">$</span>maximum_longevity_yrs, data[[trait]])<span class="sc">$</span>estimate</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>trait <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;Female Maturity (day)&quot;</span>, <span class="st">&quot;Pregnancy Period (day)&quot;</span>, <span class="st">&quot;Milk Feeding Stop (day)&quot;</span>, </span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;Number of Babies per Pregnancy&quot;</span>, <span class="st">&quot;Number of Babies per Year&quot;</span>, <span class="st">&quot;Adult Weight (g)&quot;</span>)</span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> cleaned_data</span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>overall_cor <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">get_cor</span>(data, <span class="st">&quot;female_maturity_days&quot;</span>), </span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(data, <span class="st">&quot;gestation_incubation_days&quot;</span>), </span>
-<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(data, <span class="st">&quot;weaning_days&quot;</span>),</span>
-<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(data, <span class="st">&quot;litter_clutch_size&quot;</span>),</span>
-<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(data, <span class="st">&quot;litters_clutches_per_year&quot;</span>),</span>
-<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(data, <span class="st">&quot;adult_weight_g&quot;</span>))</span>
-<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>summary_cor <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Trait =</span> trait,</span>
-<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>                          <span class="at">Overall =</span> <span class="fu">round</span>(overall_cor, <span class="dv">3</span>)</span>
-<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>                          )</span>
-<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">unique</span>(long_cleaned_data<span class="sc">$</span>order)) {</span>
-<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>  filtered <span class="ot">&lt;-</span> cleaned_data[cleaned_data<span class="sc">$</span>order <span class="sc">==</span> i,]</span>
-<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>  current_cor <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">get_cor</span>(filtered, <span class="st">&quot;female_maturity_days&quot;</span>), </span>
-<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(filtered, <span class="st">&quot;gestation_incubation_days&quot;</span>), </span>
-<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(filtered, <span class="st">&quot;weaning_days&quot;</span>), </span>
-<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(filtered, <span class="st">&quot;litter_clutch_size&quot;</span>), </span>
-<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(filtered, <span class="st">&quot;litters_clutches_per_year&quot;</span>), </span>
-<span id="cb26-33"><a href="#cb26-33" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(filtered, <span class="st">&quot;adult_weight_g&quot;</span>))</span>
-<span id="cb26-34"><a href="#cb26-34" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb26-35"><a href="#cb26-35" aria-hidden="true" tabindex="-1"></a>  summary_cor[[i]] <span class="ot">&lt;-</span> <span class="fu">round</span>(current_cor, <span class="dv">3</span>)</span>
-<span id="cb26-36"><a href="#cb26-36" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb26-37"><a href="#cb26-37" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb26-38"><a href="#cb26-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-39"><a href="#cb26-39" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(summary_cor)</span></code></pre></div>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cor.test</span>(data<span class="sc">$</span>maximum_longevity_yrs, data[[trait]])<span class="sc">$</span>estimate</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>trait <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;Female Maturity (day)&quot;</span>, <span class="st">&quot;Pregnancy Period (day)&quot;</span>, <span class="st">&quot;Milk Feeding Stop (day)&quot;</span>, </span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;Number of Babies per Pregnancy&quot;</span>, <span class="st">&quot;Number of Babies per Year&quot;</span>, <span class="st">&quot;Adult Weight (g)&quot;</span>)</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> cleaned_data</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>overall_cor <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">get_cor</span>(data, <span class="st">&quot;female_maturity_days&quot;</span>), </span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(data, <span class="st">&quot;gestation_incubation_days&quot;</span>), </span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(data, <span class="st">&quot;weaning_days&quot;</span>),</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(data, <span class="st">&quot;litter_clutch_size&quot;</span>),</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(data, <span class="st">&quot;litters_clutches_per_year&quot;</span>),</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(data, <span class="st">&quot;adult_weight_g&quot;</span>))</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>summary_cor <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Trait =</span> trait,</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>                          <span class="at">Overall =</span> <span class="fu">round</span>(overall_cor, <span class="dv">3</span>)</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>                          )</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">unique</span>(long_cleaned_data<span class="sc">$</span>order)) {</span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>  filtered <span class="ot">&lt;-</span> cleaned_data[cleaned_data<span class="sc">$</span>order <span class="sc">==</span> i,]</span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>  current_cor <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">get_cor</span>(filtered, <span class="st">&quot;female_maturity_days&quot;</span>), </span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(filtered, <span class="st">&quot;gestation_incubation_days&quot;</span>), </span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(filtered, <span class="st">&quot;weaning_days&quot;</span>), </span>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(filtered, <span class="st">&quot;litter_clutch_size&quot;</span>), </span>
+<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(filtered, <span class="st">&quot;litters_clutches_per_year&quot;</span>), </span>
+<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">get_cor</span>(filtered, <span class="st">&quot;adult_weight_g&quot;</span>))</span>
+<span id="cb26-33"><a href="#cb26-33" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-34"><a href="#cb26-34" aria-hidden="true" tabindex="-1"></a>  summary_cor[[i]] <span class="ot">&lt;-</span> <span class="fu">round</span>(current_cor, <span class="dv">3</span>) <span class="co"># combining obatined extimation</span></span>
+<span id="cb26-35"><a href="#cb26-35" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-36"><a href="#cb26-36" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-37"><a href="#cb26-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-38"><a href="#cb26-38" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(summary_cor)</span></code></pre></div>
 <table>
 <colgroup>
 <col width="38%" />
@@ -2609,7 +2607,7 @@ significance can be compared more accurately.</p>
 <span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="co"># I would like to look at the exact value, so kable is not used here</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="co"># to look at the exact value, kable is not used here</span></span>
 <span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>summary_lm</span></code></pre></div>
 <pre><code>## # A tibble: 6 × 6
 ##   Trait                         Overall Artiodactyla Carnivora Primates Rodentia
@@ -2620,7 +2618,7 @@ significance can be compared more accurately.</p>
 ## 4 Number of Babies per Pregna… 3.56e- 7      8.22e-2 0.00144   0.525     6.52e-3
 ## 5 Number of Babies per Year    2.25e- 8      6.73e-1 0.00352   0.147     1.08e-1
 ## 6 Adult Weight (g)             2.69e- 6      5.19e-9 0.183     0.294     7.98e-1</code></pre>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># the function covert value to star, so that the significane of correlation can easier to visualise</span></span>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># coverting value to star, so the significance of correlation can easier to visualise</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>convert_to_stars <span class="ot">&lt;-</span> <span class="cf">function</span>(p) {</span>
 <span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ifelse</span>(p <span class="sc">&lt;</span> <span class="fl">0.001</span>, <span class="st">&quot;***&quot;</span>,</span>
@@ -2710,65 +2708,69 @@ significance can be compared more accurately.</p>
 <p>“*” : Significant</p>
 <p>“.” : Suggestion of Association</p>
 <p>” ” : Not Significant</p>
-<p>The LM have found female maturity, number of babies each pregnancy
-and per year, and adult weight are highly significant associated with
-the maximum longevity overall (among all the 4 species) with the female
-maturity as the most significant. This is probably due to its reflection
-on the growth rate of a species, whereas species take longer time to
-mature usually live longer with a lower growth rate [5].</p>
+<p>With respect to the direction of correlation in CT and significance
+in LM, female maturity, number of babies each pregnancy and per year,
+and adult weight are found to highly associate with the maximum
+longevity overall with the female maturity as the most significant, due
+to its reflection on the growth rate of a species, whereas species take
+longer time to mature usually live longer with a lower growth
+rate[5].</p>
 <p>Meanwhile, when fitting data from four orders separately into the LM,
 distinct associations emerge for each trait across the orders. The
-female maturity only remain the most significant in Carnivora, which
-probably due to its position often as a predator, can afford the trade
-off to live longer with a delayed maturity, increasing the fitness of
-individual [7].</p>
+female maturity only remain the most significant in Carnivora, it can be
+deduced by its position often as a predator, and so can afford the trade
+off for living longer with a delayed maturity, increasing the fitness of
+individual[7].</p>
 <p>While the stand out of pregnancy (gestation) period in determining
 the lifespan of Primates and Rodentia can be understood through its
-representation of parental investment. Many mammal, especially the
-larger ones usually adopt “K-strategies” in reproduction. This refers to
-reproducing slower and producing less offspring with greater care and
-investment in each offspring, contrast with the “R-strategies” [3,6].
-Species with a higher parental investment are more likely to live
-longer, this is particularly stand out in Primates and Rodentia [3].</p>
+representation of parental investment. Larger mammals usually adopt
+“K-strategies” in reproduction. This refers reproducing slower with less
+offspring but greater care and investment in each offspring, contrast
+with “R-strategies”[3,6]. Rodentia as an order varied in size, diversed
+in their parental investment, such as beavers have longer gestation
+periods than mice; Primates are known for their cognitive abilities and
+complex social behaviors, which is developed by utero-development and
+parental investment, hence gestation period increase their fitness
+significantly[9].</p>
 <p>For the significance of adult weight in Artiodactyla, they are
 usually a prey in the wild compared to other order, larger size of them
 are generally less prone to predation and leading to a lower mortality
-rate, hence, extending their lifespan [5].</p>
-<p>Comparing the result from LM and CT, they are not aligned, such as
-adult weight is highly significant but is having the least positive
-correlation overall, and both Primates and Rodentia are having the
-highest degree of correlation with weaning day (milk feeding stop) but
-it is not significant in linear model. This result might due to the
-different data used, where as the observation of na_rm_data is a half
-less than the cleaned_data</p>
+rate, hence, extending their lifespan[5].</p>
+<p>Result from LM and CT are not aligned, such as adult weight is highly
+significant but is having the least positive correlation overall, and
+both Primates and Rodentia are having the highest degree of correlation
+with milk feeding stop but is not significant in LM. This result might
+due to different datas used, especially the number of observation in
+na_rm_data is a half less than cleaned_data</p>
 </div>
 <div id="conclusion" class="section level2">
 <h2>Conclusion</h2>
 <p>Through various analysis, this study highlight the significance of
-certain life-history traits, with female maturity day standing out as a
-primary determinant of longevity across the order. However, with AnAge
-becoming more complete and larger, I believe a more accurate and wide
-linking between different life-history traits and lifespan can be
-analysed.</p>
+certain life-history traits, with female maturity day being a primary
+determinant of longevity across the order. However, with AnAge becoming
+more complete and larger, I believe a more accurate and wide linking
+between different life-history traits and lifespan can be analysed.</p>
 </div>
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>
-<p>A_database_of_vertebrate_longevity_records_and_their_relation_to_other_life-history_traits.
+<p>1-A_database_of_vertebrate_longevity_records_and_their_relation_to_other_life-history_traits.
 <a href="https://doi.org/10.1111/j.1420-9101.2009.01783.x" class="uri">https://doi.org/10.1111/j.1420-9101.2009.01783.x</a></p>
-<p>Taxonomic_differences_in_the_mammalian_life_span-body_weight_relationship_and_the_problem_of_brain_weight.doi:
+<p>2-Taxonomic_differences_in_the_mammalian_life_span-body_weight_relationship_and_the_problem_of_brain_weight.doi:
 10.1159/000212400.</p>
-<p>Evolution_of_Reproductive_Life_History_in_Mammals_and_the_Associated_Change_of_Functional_Constraints.
+<p>3-Evolution_of_Reproductive_Life_History_in_Mammals_and_the_Associated_Change_of_Functional_Constraints.
 <a href="https://doi.org/10.3390/genes12050740" class="uri">https://doi.org/10.3390/genes12050740</a></p>
-<p>Human_Ageing_Genomic_Resources:_integrated_databases_and_tools_for_the_biology_and_genetics_of_ageing.
+<p>4-Human_Ageing_Genomic_Resources:_integrated_databases_and_tools_for_the_biology_and_genetics_of_ageing.
 <a href="https://doi.org/10.1093/nar/gks1155" class="uri">https://doi.org/10.1093/nar/gks1155</a></p>
-<p>An_analysis_of_the_relationship_between_metabolism,_developmental_schedules,_and_longevity_using_phylogenetic_independent_contrasts.
+<p>5-An_analysis_of_the_relationship_between_metabolism,_developmental_schedules,_and_longevity_using_phylogenetic_independent_contrasts.
 <a href="https://doi.org/10.1093/gerona/62.2.149" class="uri">https://doi.org/10.1093/gerona/62.2.149</a></p>
-<p>Parental_investment,_late_reproduction,_and_increased_reserve_capacity_are_associated_with_longevity_in_humans.doi:
+<p>6-Parental_investment,_late_reproduction,_and_increased_reserve_capacity_are_associated_with_longevity_in_humans.doi:
 10.2114/jpa2.25.119.</p>
-<p>The_fast–slow_continuum_and_mammalian_life-history_patterns:_an_empirical_evaluation.
+<p>7-The_fast–slow_continuum_and_mammalian_life-history_patterns:_an_empirical_evaluation.
 <a href="https://doi.org/10.1016/j.baae.2004.06.002" class="uri">https://doi.org/10.1016/j.baae.2004.06.002</a></p>
-<p>chatGPT</p>
+<p>8-chatGPT</p>
+<p>9-Maternal_investment,_life_histories,_and_the_costs_of_brain_growth_in_mammals.
+<a href="https://doi.org/10.1073/pnas.1019140108" class="uri">https://doi.org/10.1073/pnas.1019140108</a></p>
 </div>
 
 
