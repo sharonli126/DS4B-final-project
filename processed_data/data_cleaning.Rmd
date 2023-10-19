@@ -46,7 +46,7 @@ Here I try to remove nonsense data.
 
 Suppose all species from same genus have a similar feature, so they wont have a vary difference. 
 
-Some weird data were identified and noted in the excluded data, by using grouping each order by genus, since species within the same genus should have a relative similar trait, then the mean ,and range of minimum value and maximum value were found, and using the 'summarise()' function to organised a table for visualizing which trait have a range to mean ratio over 1:2. After spotting out suspected genus, I will go to the table and have a look which species quite diverse to its genus group and online search whether there is other website/ paper mentioning its proper value for that trait. All data vary from information online will be noted in the excluded data.
+Some weird data were identified and noted in the excluded data, by using grouping each order by genus, since species within the same genus should have a relative similar trait, then the mean ,and range of minimum value and maximum value were found, and using the 'summarise()' function to organised a table for visualizing which trait have a range to mean ratio over 1:2. After spotting out suspected genus, I will go to the data and have a look which species quite diverse to its genus group and online search whether there is other website/ paper mentioning its proper value for that trait. All data vary from information online will be noted in the excluded data.
 
 
 ```{r}
