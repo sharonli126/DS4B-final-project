@@ -15,7 +15,7 @@ output:
 ---
 # Word/figure count
 
-Words: [1995]
+Words: [1999]
 Figures: [6]
 
 # Location on GitHub
@@ -24,15 +24,17 @@ https://github.com/sharonli126/DS4B-final-project
 
 # Data Description
 
-AnAge is a database recording the longevity, ageing and life history across over 4000 animal species which researchers have collected and published relevant data and is freely available online. It was developed by researchers at the Human Ageing Genomic Resources, encompassed species data with key attributes include taxonomic classification, developmental milestone, reproductive traits , physiological characteristics, and maximum longevity. To reduce bias, the data incorporates estimated sample sizes and quality assessments. It can be widely used in biological field, such as zoology, ecology, physiology and conservation biology [1].    
+AnAge is a database recording the longevity, ageing and life history across over 4600 animal species which researchers have collected and published relevant data and is freely available online. It was developed by researchers at the Human Ageing Genomic Resources, encompassed species data with key attributes include taxonomic classification, developmental milestone, reproductive traits , physiological characteristics, and maximum longevity. To minimise bias, the data incorporates estimated sample sizes and quality assessments. It can be widely used in biological field, such as zoology, ecology, and conservation biology [1].    
 
 # Questions/Aims
 
-Why do some animals live only a few years, but some can live several years, or even over a hundred year? This has been one of the most interesting questions in Biology all the time. While animals varies in lifespan, the order of Mammalia, which we, humans belong to, notably present a diverse of lifespan. For hamster or mouse, they only have around 4 years lifespan but for a gorilla, it can live up to around 60 years, or humans and whales can live even over 100 and 200 years old! 
+__Which life-history traits are most significantly associated with variations in maximum longevity among the orders of Primates, Rodentia, Carnivora, and Artiodactyla?__
 
-There are various of life-history traits in the class of mammalia, such as Primates tend to have longer lifespans, extended juvenile dependency periods, and fewer offspring, while most rodents reproduce quickly with shorter lifespans, having more offspring in their lifetime. Meanwhile, species of Carnivora and Artiodactyla, like lions and deer respectively, exhibit a range of lifespans and reproductive strategies, but their lifespan is relatively higher than Rodentia [2,3].
+Why do some animals live only few years, but some can live several years, or even over a hundred year? This has been one of the most interesting questions in Biology all the time. While animals varies in lifespan, the order of Mammalia, which we, humans belong to, notably present a diversity of lifespan. For mouse, they only have around 4 years lifespan but for a gorilla, it can live up to around 60 years, or humans and whales can live even over 100 and 200 years old! 
 
-Therefore, to understand deeper of which trait correlate the most with lifespan in different order of mammalia, this study analyse a big database of aging and life-history traits in over 4600 animal species from AnAge, aiming to examine and compare life-history traits impact on maximum longevity among mammalia, particularly in four larger order group, including Primates, Rodentia, Carnivora and Artiodactyla.
+There are various of life-history traits in the class of mammalia, such as Primates tend to have longer lifespans, extended juvenile dependency periods, and fewer offspring, while most rodents is in contrast, and have more offspring in their lifetime. Meanwhile, species of Carnivora and Artiodactyla, like lions and deer respectively, exhibit a range of lifespans and reproductive strategies, but their lifespan is relatively higher than Rodentia [2,3].
+
+Therefore, to understand which trait correlate the most with lifespan in different order of mammalia, this study analyse the big database of aging and life-history traits from AnAge, aiming to examine and compare life-history traits impact on maximum longevity among mammalia, particularly in four larger order group, including Primates, Rodentia, Carnivora and Artiodactyla.
 
 # Raw data
 
@@ -57,7 +59,7 @@ raw_data <- read_delim("raw_data/anage_data.txt",
 
 # Data wrangling
 
-Since the data is originally "each variable forms a column, each observation forms a row and each type of observational unit forms a table", so only column names are tidied.
+Since the data is originally "each variable = column, each observation = row and each type of observational unit forms a table", so only column names are tidied.
 ```{r}
 tidied_data <- raw_data |>
   clean_names()
@@ -68,7 +70,7 @@ write.csv(tidied_data,
 
 ```
 
-Considering the reliability of this study, only trait with more than 0.55 complete rate will be examined and order with more than 150 rows will be observed, for filtering an acceptable sample size.
+Considering the reliability of this study, only trait with more than 0.55 complete rate will be examined and order with more than 150 rows will be observed for filtering an acceptable sample size.
 
 ```{r}
 mammalia <- tidied_data[tidied_data$class == "Mammalia",]
@@ -83,14 +85,16 @@ skim(mammalia) |> filter(complete_rate > 0.55)
 Therefore, the top four orders are filtered and trait including day of female maturity, gestation and weaning, number of babies per time and year, and adult weight.
 
 ```{r}
-# Filter data need for this report
+# Filter data for this report
 
 mammalia_subset <- mammalia[, c("hagrid", "kingdom", "phylum", "class", "order", "family", "genus", "species", "female_maturity_days", "gestation_incubation_days", "weaning_days", "litter_clutch_size", "litters_clutches_per_year", "adult_weight_g", "maximum_longevity_yrs" )]
 
 combined_order <- mammalia_subset[mammalia_subset$order %in% c("Rodentia", "Carnivora", "Primates", "Artiodactyla"),]
 ```
 
-Some weird observations were identified and noted in the excluded data, through grouping all value by genus, summeraising mean, range of max and min value were found. Suspected genus with a range close to the mean will be searched online. All data vary from information online will be noted in the excluded data.
+Suppose species from same genus group will have a similar trait, therefore, some weird observations were identified and noted in the excluded data, through grouping all value by genus, summeraising mean, range of max-min value were found. 
+
+For example, a suspected genus, Ateles in Primates has a range of max-min weaning_day (411), which is half of the mean (675) will be spotted and searched online, due to its variation within the genus group.
 
 ```{r}
 excluded_data <- read_csv("processed_data/excluded_data.csv")
@@ -184,7 +188,7 @@ ggplot(long_cleaned_data, aes(x = value, y = maximum_longevity_yrs, color = orde
   theme_minimal()
 ```
 
-The visualization above have shown the linear relationship of each traits with maximum longevity. All directions are the same in 
+The visualization above have shown the linear relationship of each traits with maximum longevity. All directions are the same in each plot, but all traits have exhibit a different slope in all plots, except the female maturity, which all have a similar slope, indicating this trait has a similar impact on the lifespan in all analysed orders. 
 
 ### Correlation of Different Traits and Maximum Longevity (without missing-value)
 
@@ -197,7 +201,7 @@ ggplot(long_na_rm_data, aes(x = value, y = maximum_longevity_yrs, color = order)
   theme_minimal()
 ```
 
-As compared with the plotting with missing value, the trend of all trait does not change, but most of its slope changed due to less sample size has shifted the correlation. 
+As compared with the plotting with missing value, the trend of most trait did not change, only the slope of Artioactyle (red) in the number of babies in each pregnancy has shift to a positive correlation, but with a non-steep slope. While other slope of trait are probably changed due to less sample size has shifted the correlation, such as Rodentia (purple) in day of milk feeding stop plot. Therefore, the following test and fitting are expected to be varied, with application of two different cleaned data.
 
 ## Correlation Test
 
@@ -206,6 +210,7 @@ The correlation test (CT) can provide a quick look on the strength and direction
 ```{r}
 get_cor <- function(data, trait) {
   
+  # function to obtain "estimation in cor.test
   cor.test(data$maximum_longevity_yrs, data[[trait]])$estimate
   
 }
@@ -245,7 +250,7 @@ kable(summary_cor)
 
 ```
 
-The CT have reflected the same trend as the two correlation plot in EDA section. All order have the same direction of correlation in each trait with female maturity and pregnancy period as the highest correlated in overall. However, different degree of correlation were found in individual order testing, such as adult weight is having the highest correlation in the order of Artiodactyla but it is not the highest correlated trait in other orders. 
+The CT have reflected a similar trend as the first correlation plots in EDA section. All order have the same direction of correlation in each trait with female maturity and pregnancy period as the highest correlated in overall. However, different degree of correlation were found in individual order testing, such as adult weight is having the highest correlation in the order of Artiodactyla but it is not the highest correlated trait in other orders. 
  
 ## Linear model
 
@@ -286,10 +291,13 @@ for (i in unique(na_rm_data$order)) {
   
 }
 
-kable(summary_lm)
+# I would like to look at the exact value, so kable is not used here
+summary_lm
 ```
 
 ```{r}
+# the function covert value to star, so that the significane of correlation can easier to visualise
+
 convert_to_stars <- function(p) {
   ifelse(p < 0.001, "***",
          ifelse(p < 0.01, "**",
@@ -316,26 +324,34 @@ Note:
 
 " "  : Not Significant
 
-The LM have found female maturity, number of babies each pregnancy and per year, and adult weight are significant associated with the maximum longevity overall (among all the 4 species) with the female maturity as the most significant. This is probably due to its reflection on the growth rate of a species, whereas species take longer time to mature usually live longer with a lower growth rate [5]. 
+The LM have found female maturity, number of babies each pregnancy and per year, and adult weight are highly significant associated with the maximum longevity overall (among all the 4 species) with the female maturity as the most significant. This is probably due to its reflection on the growth rate of a species, whereas species take longer time to mature usually live longer with a lower growth rate [5]. 
 
-Meanwhile, when fitting data from four orders separately into the LM, distinct associations emerge for each trait across the orders. The female maturity only remain the most significant in Carnivora, while gestation period stand out among Primates and Rodentia, and adult weight for Artiodactyla. 
+Meanwhile, when fitting data from four orders separately into the LM, distinct associations emerge for each trait across the orders. The female maturity only remain the most significant in Carnivora, which probably due to its position often as a predator, can afford the trade off to live longer with a delayed maturity, increasing the fitness of individual [7]. 
 
-Pregnancy period in determining the lifespan of Primates and Rodentia can be understood through its representation of parental investment Many mammal, especially the larger ones usually adopt "K-strategies" in reproduction. This refers to reproducing slower and producing less offspring with greater care and investment in each offspring, contrast with the "R-strategies" [3,6]. Moreover, for Artiodactyla, they are usually a prey in the wild, larger size of them are generally less prone to predation and leading to a lower mortality rate, hence, extending their lifespan but this is not an universal trend in mammals [5].
+While the stand out of pregnancy (gestation) period in determining the lifespan of Primates and Rodentia can be understood through its representation of parental investment. Many mammal, especially the larger ones usually adopt "K-strategies" in reproduction. This refers to reproducing slower and producing less offspring with greater care and investment in each offspring, contrast with the "R-strategies" [3,6]. Species with a higher parental investment are more likely to live longer, this is particularly stand out in Primates and Rodentia [3]. 
 
-Comparing the result from LM and CT, they are not aligned, such as adult weight is highly significant but is having the least positive correlation overall, and both Primates and Rodentia are having highest degree of correlation with weaning day (milk feeding stop) but it is not significant in linear model. This result might due to the different, since the LM is using the data without missing value, which amount is less than a half of data with missing value. 
+For the significance of adult weight in Artiodactyla, they are usually a prey in the wild compared to other order, larger size of them are generally less prone to predation and leading to a lower mortality rate, hence, extending their lifespan [5].
 
-However, in conclusion, all visulisation, CT, and LM have shown the relationship of different traits with maximum longevity and these correlations are varied in different orders, the most significant trait associated with their lifespan can be different too. With AnAge becoming more complete and larger, I believe a more accurate and wide linking between different life-history traits and lifespan can be analysed.
+Comparing the result from LM and CT, they are not aligned, such as adult weight is highly significant but is having the least positive correlation overall, and both Primates and Rodentia are having the highest degree of correlation with weaning day (milk feeding stop) but it is not significant in linear model. This result might due to the different data used, where as the observation of na_rm_data is a half less than the cleaned_data 
+
+## Conclusion
+
+Through various analysis, this study highlight the significance of certain life-history traits, with female maturity day standing out as a primary determinant of longevity across the order. However, with AnAge becoming more complete and larger, I believe a more accurate and wide linking between different life-history traits and lifespan can be analysed.
 
 # References
 
-1. A database of vertebrate longevity records and their relation to other life-history traits. https://doi.org/10.1111/j.1420-9101.2009.01783.x
+A_database_of_vertebrate_longevity_records_and_their_relation_to_other_life-history_traits. https://doi.org/10.1111/j.1420-9101.2009.01783.x
 
-2. Taxonomic differences in the mammalian life span-body weight relationship and the problem of brain weight. doi: 10.1159/000212400.
+Taxonomic_differences_in_the_mammalian_life_span-body_weight_relationship_and_the_problem_of_brain_weight.doi: 10.1159/000212400.
 
-3. Evolution of Reproductive Life History in Mammals and the Associated Change of Functional Constraints.  https://doi.org/10.3390/genes12050740
+Evolution_of_Reproductive_Life_History_in_Mammals_and_the_Associated_Change_of_Functional_Constraints.  https://doi.org/10.3390/genes12050740
 
-4. Human Ageing Genomic Resources: integrated databases and tools for the biology and genetics of ageing. https://doi.org/10.1093/nar/gks1155
+Human_Ageing_Genomic_Resources:_integrated_databases_and_tools_for_the_biology_and_genetics_of_ageing. https://doi.org/10.1093/nar/gks1155
 
-5. An analysis of the relationship between metabolism, developmental schedules, and longevity using phylogenetic independent contrasts. https://doi.org/10.1093/gerona/62.2.149
+An_analysis_of_the_relationship_between_metabolism,_developmental_schedules,_and_longevity_using_phylogenetic_independent_contrasts. https://doi.org/10.1093/gerona/62.2.149
 
-6. Parental investment, late reproduction, and increased reserve capacity are associated with longevity in humans. doi: 10.2114/jpa2.25.119. 
+Parental_investment,_late_reproduction,_and_increased_reserve_capacity_are_associated_with_longevity_in_humans.doi: 10.2114/jpa2.25.119. 
+
+The_fast–slow_continuum_and_mammalian_life-history_patterns:_an_empirical_evaluation. https://doi.org/10.1016/j.baae.2004.06.002
+
+chatGPT
